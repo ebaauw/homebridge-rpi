@@ -185,3 +185,31 @@ and prints them as ascii.
 The `fc` command closes the file.
 
 #### Automatic Discovery
+I run my Raspberry Pi machines headless (without a monitor, keyboard, or mouse),
+using VNC to access the desktop remotely.
+The VNC server comes pre-installed with Raspbian.
+Clients connect to it using the Remote Frame Buffer protocol,
+which is also used by macOS screen sharing.
+To use macOS screen sharing, the VNC server needs to be
+configured with a VNC password (rather than a UNIX password).
+
+I've configured the `avahi` daemon my Raspberry Pi machines to
+advertise the VNC server over Bonjour, so macOS will find them automatically.
+This is done by creating `rfb.service` in `/etc/avahi/services` and restarting
+the daemon:
+```
+$ sudo sh -c 'cat - > /etc/avahi/services/rfb.service' <<+
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+	<name replace-wildcards="yes">%h</name>
+	<service>
+		<type>_rfb._tcp</type>
+		<port>5900</port>
+	</service>
+</service-group>
++
+$ sudo systemctl restart avahi-daemon
+```
+The homebridge-rpi plugin listens for these Bonjour to find Raspberry Pi
+machines on the local network.
