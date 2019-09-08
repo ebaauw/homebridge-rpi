@@ -1,0 +1,2 @@
+/proc/cpuinfo r
+/opt/pigpio/vcgencmd.out r

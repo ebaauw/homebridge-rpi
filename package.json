@@ -1,0 +1,36 @@
+{
+  "name": "homebridge-rpi",
+  "description": "Homebridge plugin for Raspberry Pi",
+  "author": "Erik Baauw",
+  "license": "Apache-2.0",
+  "version": "0.0.0",
+  "keywords": [
+    "homebridge-plugin",
+    "raspberrypi",
+    "raspberry",
+    "pi",
+    "pigpio",
+    "gpio"
+  ],
+  "main": "index.js",
+  "engines": {
+    "homebridge": "^0.4.50",
+    "node": "^10.16.3"
+  },
+  "dependencies": {
+    "bonjour-hap": "~3.5.4",
+    "homebridge-lib": "~4.4.5"
+  },
+  "scripts": {
+    "prepare": "standard",
+    "test": "standard && echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebaauw/homebridge-rpi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ebaauw/homebridge-rpi/issues"
+  },
+  "homepage": "https://github.com/ebaauw/homebridge-rpi#readme"
+}
