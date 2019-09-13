@@ -126,11 +126,11 @@ Pi's CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
 $ sudo cp vcgencmd /opt/pigpio/cgi
-$ chmod 755 /opt/pigpio/cgi/vcgencmd.sh
+$ chmod 755 /opt/pigpio/cgi/vcgencmd
 ```
 To check that the script has been installed correctly, issue:
 ```
-$ pigs shell vcgencmd.sh
+$ pigs shell vcgencmd
 0
 ```
 The return status `0` indicates success.
