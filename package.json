@@ -15,11 +15,11 @@
   "main": "index.js",
   "engines": {
     "homebridge": "^0.4.50",
-    "node": "^10.16.3"
+    "node": "^12.13.0"
   },
   "dependencies": {
     "bonjour-hap": "~3.5.4",
-    "homebridge-lib": "~4.4.5"
+    "homebridge-lib": "~4.4.6"
   },
   "scripts": {
     "prepare": "standard",
