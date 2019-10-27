@@ -24,6 +24,17 @@ In particular, homebridge-rpi:
 - Does _not_ require any C components;
 - Does _not_ require `root` privilege.
 
+### Work in Progress
+Note that this plugin is still under development.
+Todo:
+- Handle connection errors to remote `pigpiod` instead of crashing;
+- Expose current server when running on a Raspberry Pi;
+- Specify other Raspberry Pi computers in `config.json`;
+- Specify GPIO pin assignment in `config.json`;
+- Support PWM;
+- Support Fan SHIM button (and other buttons);
+- Support NeoPixel LEDs.
+
 ### Prerequisites
 You need a server to run Homebridge.
 This can be anything running [Node.js](https://nodejs.org): a Raspberri Pi,
@@ -68,34 +79,21 @@ $ sudo npm -g i homebridge-rpi
 ```
 on the server or container running Homebridge.
 
-Note that you need to execute these steps on each of the Raspberry Pi
+Note that you need to execute the following steps on each of the Raspberry Pi
 computers you want homebridge-rpi to expose.
 
 #### Configure `pigpiod` Service
 Raspbian comes with a service definition for `pigpiod`, in
-`/lib/systemd/system/pigpiod.service`:
-```
-[Unit]
-Description=Daemon required to control GPIO pins via pigpio
-[Service]
-ExecStart=/usr/bin/pigpiod -l
-ExecStop=/bin/systemctl kill pigpiod
-Type=forking
-[Install]
-WantedBy=multi-user.target
-```
+`/lib/systemd/system/pigpiod.service`.
 By default `pigpiod` won't accept remote connections, due to the `-l` option.
-To enable remote connections, edit `pigpiod.service` and remove the `-l` option
-from `ExecStart`:
+To enable remote connections, run `sudo raspi-config` and set _Remote GPIO_ (P8)
+under _Interfacing Options_ (5).
+This will create a drop-in configuration in
+`/etc/systemd/system/pigpiod.service.d/public.conf`, removing the `-l` option.
+After that, reload the daemon by:
 ```
-ExecStart=/usr/bin/pigpiod
+$ sudo systemctl daemon-reload
 ```
-If you want, you can limit remote connections to the service running
-homebridge-rpi by:
-```
-ExecStart=/usr/bin/pigpiod -n xx.xx.xx.xx
-```
-substituting `xx.xx.xx.xx` with the IP address of the server running Homebridge.
 
 #### Enable `pigpiod` Service
 To enable and start `pigpiod` as a service, issue:
@@ -125,7 +123,26 @@ homebridge-rpi uses this hook to run a little shell script,
 Pi's CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
-$ sudo cp vcgencmd /opt/pigpio/cgi
+$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd <<+'
+#!/bin/bash
+# homebridge-rpi/opt/pigpio/cgi/vcgencmd
+# Copyright © 2019 Erik Baauw.  All rights reserved.
+#
+# Homebridge plugin for Raspberry Pi.
+
+umask 022
+exec 2> /opt/pigpio/vcgencmd.err
+exec > /opt/pigpio/vcgencmd.out
+
+echo -n "{"
+echo -n "\"date\":\"$(date -uIseconds)\","
+echo -n "\"load\":$(uptime | sed -e "s/.*load average: \([^ ]*\),.*/\1/"),"
+echo -n "\"temp\":$(vcgencmd measure_temp | sed -e "s/temp=\(.*\)'C/\1/"),"
+echo -n "\"freq\":$(vcgencmd measure_clock arm | cut -f 2 -d =),"
+echo -n "\"volt\":$(vcgencmd measure_volts | sed -e "s/volt=\(.*\)V/\1/"),"
+echo -n "\"throttled\":\"$(vcgencmd get_throttled | cut -f 2 -d =)\""
+echo -n "}"
++
 $ chmod 755 /opt/pigpio/cgi/vcgencmd
 ```
 To check that the script has been installed correctly, issue:
