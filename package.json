@@ -13,6 +13,9 @@
     "gpio"
   ],
   "main": "index.js",
+  "bin": {
+    "rpi": "cli/rpi.js"
+  },
   "engines": {
     "homebridge": "^0.4.50",
     "node": "^12.13.0"
