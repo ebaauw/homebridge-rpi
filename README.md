@@ -72,6 +72,12 @@ like [Eve](https://www.evehome.com/en/eve-app) (free) or
 setup an Apple TV (4th generation or later), HomePod, or iPad as
 [home hub](https://support.apple.com/en-us/HT207057).
 
+### Command-Line Tool
+The `homebridge-rpi` plugin comes with a command-line tool, `rpi`,
+for interacting with the `pigpiod` daemon.
+It takes a `-h` or `--help` argument to provide a brief overview of
+its functionality and command-line arguments.
+
 ### Installation
 To install homebridge-rpi, issue:
 ```
