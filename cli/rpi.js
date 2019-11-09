@@ -22,7 +22,7 @@ class UsageError extends Error {}
 
 const usage = {
   rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
-  info: `${b('info')} [${b('-h')}]`,
+  info: `${b('info')} [${b('-hns')}]`,
   closeHandles: `${b('closeHandles')} [${b('-h')}]`
 }
 
@@ -55,6 +55,9 @@ Commands:
   ${usage.info}
   ${description.info}
 
+  ${usage.closeHandles}
+  ${description.closeHandles}
+
 For more help, issue: ${b('rpi')} ${u('command')} ${b('-h')}`,
   info: `${description.info}
 
@@ -62,10 +65,20 @@ Usage: ${b('rpi')} ${usage.info}
 
 Parameters:
   ${b('-h')}, ${b('--help')}
-  Print this help and exit.`,
+  Print this help and exit.
+
+  ${b('-n')}, ${b('--noWhiteSpace')}
+  Do not include spaces nor newlines in output.
+
+  ${b('-s')}, ${b('--sortKeys')}
+  Sort object key/value pairs alphabetically on key.`,
   closeHandles: `${description.closeHandles}
 
-Usage: ${b('rpi')} ${usage.closeHandles}`
+Usage: ${b('rpi')} ${usage.closeHandles}
+
+Parameters:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.`
 }
 
 class Main extends homebridgeLib.CommandLineTool {
@@ -116,18 +129,19 @@ class Main extends homebridgeLib.CommandLineTool {
 
   async info (...args) {
     const parser = new homebridgeLib.CommandLineParser(packageJson)
-    const clargs = {
-      options: { /* sortKeys: true */ }
-    }
+    const clargs = { options: {} }
     parser.help('h', 'help', this.help)
     parser.flag('n', 'noWhiteSpace', () => {
       clargs.options.noWhiteSpace = true
+    })
+    parser.flag('s', 'sortKeys', () => {
+      clargs.options.sortKeys = true
     })
     parser.parse(...args)
     const jsonFormatter = new homebridgeLib.JsonFormatter(clargs.options)
 
     const hwver = await this.pi.command(PI_CMD.HWVER)
-    this.debug('%s: hwver: %s', this.pi.hostname, hwver)
+    this.debug('%s: hwver: %j', this.pi.hostname, hwver)
     const rpi = new RpiRevision(hwver)
 
     let serial = ''
@@ -135,13 +149,13 @@ class Main extends homebridgeLib.CommandLineTool {
     const a = /Serial\s*: ([0-9a-f]{16})/.exec(cpuinfo)
     if (a != null) {
       serial = a[1].toUpperCase()
-      this.debug('%s: serial: %s', this.pi.hostname, serial)
+      this.debug('%s: serial: %j', this.pi.hostname, serial)
     }
 
     await this.pi.command(PI_CMD.SHELL, 0, 0, Buffer.from('vcgencmd'))
     const text = await this.pi.readFile('/opt/pigpio/vcgencmd.out')
-    this.debug('%s: vcgencmd: %s', this.pi.hostname, text)
     const state = JSON.parse(text)
+    this.debug('%s: vcgencmd: %j', this.pi.hostname, state)
 
     const result = Object.assign({
       model: rpi.model,
@@ -157,6 +171,10 @@ class Main extends homebridgeLib.CommandLineTool {
   }
 
   async closeHandles (...args) {
+    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    // const clargs = { options: {} }
+    parser.help('h', 'help', this.help)
+    parser.parse(...args)
     let nClosed = 0
     for (let handle = 0; handle <= 15; handle++) {
       try {
