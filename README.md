@@ -35,6 +35,11 @@ Todo:
 - Support Fan SHIM button (and other buttons);
 - Support NeoPixel LEDs.
 
+Sometimes, the homebridge-rpi plugin doesn't properly close the `pigpiod` file
+handles.
+This can result in an `FO (104): error no handle available (-24)` error.
+Use `rpi -H xx.xx.xx.xx closeHandles` to force-close the stale handles.
+
 ### Prerequisites
 You need a server to run Homebridge.
 This can be anything running [Node.js](https://nodejs.org): a Raspberri Pi,
