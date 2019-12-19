@@ -18,11 +18,11 @@
   },
   "engines": {
     "homebridge": "^0.4.50",
-    "node": "^12.13.1"
+    "node": "^12.14.0"
   },
   "dependencies": {
     "bonjour-hap": "~3.5.4",
-    "homebridge-lib": "~4.4.8"
+    "homebridge-lib": "~4.4.9"
   },
   "scripts": {
     "prepare": "standard",
