@@ -27,8 +27,8 @@ In particular, homebridge-rpi:
 ### Work in Progress
 Note that this plugin is still under development.
 Todo:
-- Handle connection errors to remote `pigpiod` instead of crashing;
-- Expose current server when running on a Raspberry Pi;
+- ~~Handle connection errors to remote `pigpiod` instead of crashing;~~
+- ~~Expose current server when running on a Raspberry Pi;~~
 - Specify other Raspberry Pi computers in `config.json`;
 - Specify GPIO pin assignment in `config.json`;
 - Support PWM;
