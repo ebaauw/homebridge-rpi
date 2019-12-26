@@ -91,7 +91,7 @@ $ sudo npm -g i homebridge-rpi
 on the server or container running Homebridge.
 
 In homebridge's config.json you need to specify homebridge-rpi as a platform plugin:
-```json
+```
 "platforms": [
   {
     "platform": "Rpi"
