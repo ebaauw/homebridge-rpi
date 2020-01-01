@@ -3,7 +3,7 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Homebridge plugin for Raspberry Pi
-Copyright © 2019 Erik Baauw. All rights reserved.
+Copyright © 2019-2020 Erik Baauw. All rights reserved.
 
 This [Homebridge](https://github.com/nfarina/homebridge) plugin exposes a
 Raspberry Pi to HomeKit.
