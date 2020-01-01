@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "bonjour-hap": "~3.5.4",
-    "homebridge-lib": "~4.4.9"
+    "homebridge-lib": "~4.4.10"
   },
   "scripts": {
     "prepare": "standard",
