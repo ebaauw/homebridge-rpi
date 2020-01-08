@@ -39,6 +39,7 @@ Sometimes, the homebridge-rpi plugin doesn't properly close the `pigpiod` file
 handles.
 This can result in an `FO (104): error no handle available (-24)` error.
 Use `rpi -H xx.xx.xx.xx closeHandles` to force-close the stale handles.
+Note that `rpi` is installed by default to `./homebridge/node_modules/.bin/rpi`
 
 ### Prerequisites
 You need a server to run Homebridge.
@@ -79,7 +80,7 @@ setup an Apple TV (4th generation or later), HomePod, or iPad as
 
 ### Command-Line Tool
 The `homebridge-rpi` plugin comes with a command-line tool, `rpi`,
-for interacting with the `pigpiod` daemon.
+for interacting with the `pigpiod` daemon. `rpi` is installed by default to `./homebridge/node_modules/.bin/rpi`
 It takes a `-h` or `--help` argument to provide a brief overview of
 its functionality and command-line arguments.
 
