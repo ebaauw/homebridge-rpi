@@ -6,15 +6,22 @@
 Copyright © 2019-2020 Erik Baauw. All rights reserved.
 
 This [Homebridge](https://github.com/nfarina/homebridge) plugin exposes a
-Raspberry Pi to HomeKit.
+Raspberry Pi and its GPIO-connected devices to HomeKit.
 It provides the following features:
 
-- Monitoring from HomeKit the Pi's CPU: temperature, frequency, voltage,
+- Monitoring from HomeKit of the RPi's CPU: temperature, frequency, voltage,
 and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for
 the temperature;
-- Monitoring and controlling from HomeKit the Pi's GPIO pins;
-- Monitoring and controlling from HomeKit a
-[Fan SHIM](https://shop.pimoroni.com/products/fan-shim) installed in the Pi.
+- Monitoring and controlling from HomeKit of input devices
+connected to the RPi's GPIO pins:
+  - Buttons;
+  - Contact sensors (incl. Eve history);
+- Monitoring and controlling from HomeKit output devices
+connect to the RPi's GPIO pins:
+  - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
+- Monitoring and controlling from HomeKit of multi-coloured LEDs of a Pimoroni
+[Blinkt!](https://shop.pimoroni.com/products/blinkt) or
+[Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi.
 
 Unlike most other Raspberry Pi plugins, homebridge-rpi runs on any regular
 Homebridge setup, connecting to the Pi's `pigpiod` daemon over the network.
@@ -27,12 +34,12 @@ In particular, homebridge-rpi:
 ### Work in Progress
 Note that this plugin is still under development.
 Todo:
-- ~~Handle connection errors to remote `pigpiod` instead of crashing;~~
-- ~~Expose current server when running on a Raspberry Pi;~~
-- Specify other Raspberry Pi computers in `config.json`;
-- Specify GPIO pin assignment in `config.json`;
-- Support PWM;
-- Support Fan SHIM button (and other buttons);
+- Add `config.schema.json` for
+[homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x)
+- Configurable timeout settings for debouncing input,
+button double press and long press;
+- More robust handling of connection errors to missing RPis;
+- Support PWM devices (e.g. dimmable LEDs);
 - Support NeoPixel LEDs.
 
 Sometimes, the homebridge-rpi plugin doesn't properly close the `pigpiod` file
@@ -90,7 +97,10 @@ $ sudo npm -g i homebridge-rpi
 ```
 on the server or container running Homebridge.
 
-In homebridge's config.json you need to specify homebridge-rpi as a platform plugin:
+### Homebridge Configuration
+
+In homebridge's config.json you need to specify homebridge-rpi
+as a platform plugin:
 ```
 "platforms": [
   {
@@ -98,6 +108,73 @@ In homebridge's config.json you need to specify homebridge-rpi as a platform plu
   }
 ]
 ```
+With this simple setup, homebridge-rpi exposes the Raspberry Pi that it runs on,
+connecting to the `pigpiod` daemon over `localhost`.
+Note that you still need to configure the RPi for homebridge-rpi to work.
+
+To expose other or multiple RPis, specify a `hosts` array:
+```
+"platforms": [
+  {
+    "platform": "Rpi",
+    "hosts": [
+      {
+        "host": "pi1"
+      },
+      {
+        "host": "192.168.1.11",
+        "name": "pi2"
+      }
+    ]
+  }
+]
+```
+
+To expose devices connected to a GPIO pin, specify a `devices` array per host:
+```
+      {
+        "host": "pi1",
+        "devices": [
+          {
+            "device": "blinkt",
+            "name": "FanShim LED",
+            "config": {
+              "gpioClock": 14,
+              "gpioData": 15,
+              "nLeds": 1
+            }
+          }
+          {
+            "device": "button",
+            "name": "FanShim Button"
+            "config": {
+              "gpio": 17
+            }
+          },
+          {
+            "device": "switch",
+            "name": "FanShim Fan",
+            "config": {
+              "gpio": 18
+            }
+          }
+        ]
+      }
+```
+This can also be abbreviated
+```
+      {
+        "host": "pi1",
+        "devices": [
+          {
+            "device": "fanshim"
+          }
+        ]
+      }
+```
+Make sure to use a JSON linter/beautifier when editing config.json.
+
+### Raspberry Pi Configuration
 
 Note that you need to execute the following steps on each of the Raspberry Pi
 computers you want homebridge-rpi to expose.
@@ -146,7 +223,7 @@ This script needs to be installed to `/opt/pigio/cgi` by:
 $ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd <<+'
 #!/bin/bash
 # homebridge-rpi/opt/pigpio/cgi/vcgencmd
-# Copyright © 2019 Erik Baauw.  All rights reserved.
+# Copyright © 2019-2020 Erik Baauw.  All rights reserved.
 #
 # Homebridge plugin for Raspberry Pi.
 
@@ -220,33 +297,3 @@ This file descriptor is passed to the `fr` and `fc` commands.
 The `fr` commands reads up to 1024 bytes from the file,
 and prints them as ascii.
 The `fc` command closes the file.
-
-#### Automatic Discovery
-I run my Raspberry Pi machines headless (without a monitor, keyboard, or mouse),
-using VNC to access the desktop remotely.
-The VNC server comes pre-installed with Raspbian.
-Clients connect to it using the Remote Frame Buffer protocol,
-which is also used by macOS screen sharing.
-To use macOS screen sharing, the VNC server needs to be
-configured with a VNC password (rather than a UNIX password).
-
-I've configured the `avahi` daemon my Raspberry Pi machines to
-advertise the VNC server over Bonjour, so macOS will find them automatically.
-This is done by creating `rfb.service` in `/etc/avahi/services` and restarting
-the daemon:
-```
-$ sudo sh -c 'cat - > /etc/avahi/services/rfb.service' <<+
-<?xml version="1.0" standalone='no'?>
-<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
-<service-group>
-	<name replace-wildcards="yes">%h</name>
-	<service>
-		<type>_rfb._tcp</type>
-		<port>5900</port>
-	</service>
-</service-group>
-+
-$ sudo systemctl restart avahi-daemon
-```
-The homebridge-rpi plugin listens for these Bonjour to find Raspberry Pi
-machines on the local network.
