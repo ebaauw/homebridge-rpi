@@ -1,0 +1,87 @@
+{
+  "pluginAlias": "Rpi",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Homebridge plugin for Raspberry Pi",
+  "footerDisplay": "",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "device": {
+        "description": "Device connected to the Raspberry Pi.",
+        "type": "string",
+        "oneOf": [
+          {
+            "title": "Blinkt",
+            "enum": [ "blinkt" ]
+          },
+          {
+            "title": "Button",
+            "enum": [ "button" ]
+          },
+          {
+            "title": "Contact Sensor",
+            "enum": [ "contact" ]
+          },
+          {
+            "title": "Fan Shim",
+            "enum": [ "fanshim" ]
+          },
+          {
+            "title": "Switch",
+            "enum": [ "switch" ]
+          }
+        ]
+      },
+      "gpio": {
+        "title": "GPIO",
+        "description": "GPIO number.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 31
+      },
+      "hosts": {
+        "title": "Raspberry Pi",
+        "type": "array",
+        "items": {
+          "title": "Raspberry Pi",
+          "description": "Hostname and port of the Pi's pigpiod server.  E.g.: 'localhost:8888'.",
+          "type": "string"
+        }
+      },
+      "name": {
+        "description": "Plugin name as displayed in the homebridge log.",
+        "type": "string",
+        "required": true,
+        "default": "Rpi"
+      }
+    }
+  },
+  "form": [
+    "name",
+    {
+      "type": "help",
+      "helpvalue": "RaspBerry Pis"
+    },
+    {
+      "nodescription": true,
+      "notitle": true,
+      "key": "hosts",
+      "type": "array",
+      "items": [
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "hosts[]",
+              "required": true,
+              "flex": "1 1 50px"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
