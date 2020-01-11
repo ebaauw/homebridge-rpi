@@ -34,8 +34,6 @@ In particular, homebridge-rpi:
 ### Work in Progress
 Note that this plugin is still under development.
 Todo:
-- Add `config.schema.json` for
-[homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x)
 - Configurable timeout settings for debouncing input,
 button double press and long press;
 - More robust handling of connection errors to missing RPis;
@@ -99,9 +97,15 @@ on the server or container running Homebridge.
 
 ### Homebridge Configuration
 
+The configuration for homebridge-rpi can become rather complex, with nested
+arrays of objects.
+Make sure to use a JSON linter/beautifier when editing config.json.
+Alternatively, edit the configuration using
+[homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x).
+
 In homebridge's config.json you need to specify homebridge-rpi
 as a platform plugin:
-```
+```json
 "platforms": [
   {
     "platform": "Rpi"
@@ -113,7 +117,7 @@ connecting to the `pigpiod` daemon over `localhost`.
 Note that you still need to configure the RPi for homebridge-rpi to work.
 
 To expose other or multiple RPis, specify a `hosts` array:
-```
+```json
 "platforms": [
   {
     "platform": "Rpi",
@@ -131,38 +135,32 @@ To expose other or multiple RPis, specify a `hosts` array:
 ```
 
 To expose devices connected to a GPIO pin, specify a `devices` array per host:
-```
+```json
       {
         "host": "pi1",
         "devices": [
           {
             "device": "blinkt",
             "name": "FanShim LED",
-            "config": {
-              "gpioClock": 14,
-              "gpioData": 15,
-              "nLeds": 1
-            }
+            "gpioClock": 14,
+            "gpioData": 15,
+            "nLeds": 1
           }
           {
             "device": "button",
-            "name": "FanShim Button"
-            "config": {
-              "gpio": 17
-            }
+            "name": "FanShim Button",
+            "gpio": 17
           },
           {
             "device": "switch",
             "name": "FanShim Fan",
-            "config": {
-              "gpio": 18
-            }
+            "gpio": 18
           }
         ]
       }
 ```
 This can also be abbreviated
-```
+```json
       {
         "host": "pi1",
         "devices": [
@@ -172,7 +170,6 @@ This can also be abbreviated
         ]
       }
 ```
-Make sure to use a JSON linter/beautifier when editing config.json.
 
 ### Raspberry Pi Configuration
 
