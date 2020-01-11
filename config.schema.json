@@ -7,81 +7,222 @@
   "schema": {
     "type": "object",
     "properties": {
-      "device": {
-        "description": "Device connected to the Raspberry Pi.",
-        "type": "string",
-        "oneOf": [
-          {
-            "title": "Blinkt",
-            "enum": [ "blinkt" ]
-          },
-          {
-            "title": "Button",
-            "enum": [ "button" ]
-          },
-          {
-            "title": "Contact Sensor",
-            "enum": [ "contact" ]
-          },
-          {
-            "title": "Fan Shim",
-            "enum": [ "fanshim" ]
-          },
-          {
-            "title": "Switch",
-            "enum": [ "switch" ]
-          }
-        ]
-      },
-      "gpio": {
-        "title": "GPIO",
-        "description": "GPIO number.",
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 31
-      },
-      "hosts": {
-        "title": "Raspberry Pi",
-        "type": "array",
-        "items": {
-          "title": "Raspberry Pi",
-          "description": "Hostname and port of the Pi's pigpiod server.  E.g.: 'localhost:8888'.",
-          "type": "string"
-        }
-      },
       "name": {
         "description": "Plugin name as displayed in the homebridge log.",
         "type": "string",
         "required": true,
         "default": "Rpi"
+      },
+      "hosts": {
+        "title": "Raspberry Pis",
+        "notitle": true,
+        "type": "array",
+        "items": {
+          "description": "<b>Raspberry Pi</b>",
+          "type": "object",
+          "properties": {
+            "host": {
+              "title": "Host",
+              "description": "IP address or hostname and port of the Pi's pigpiod server.  E.g.: 'localhost:8888'.",
+              "type": "string",
+              "required": true
+            },
+            "name": {
+              "title": "Name",
+              "description": "The hostname of the Raspberry Pi.",
+              "type": "string"
+            },
+            "devices": {
+              "title": "Devices",
+              "notitle": true,
+              "type": "array",
+              "items":  {
+                "description": "<b>Device</b>",
+                "type": "object",
+                "properties": {
+                  "device": {
+                    "title": "Device",
+                    "description": "The type of the device.",
+                    "type": "string",
+                    "required": true,
+                    "oneOf": [
+                      {
+                        "title": "Blinkt",
+                        "enum": [ "blinkt" ]
+                      },
+                      {
+                        "title": "Button",
+                        "enum": [ "button" ]
+                      },
+                      {
+                        "title": "Contact Sensor",
+                        "enum": [ "contact" ]
+                      },
+                      {
+                        "title": "Fan Shim",
+                        "enum": [ "fanshim" ]
+                      },
+                      {
+                        "title": "Switch",
+                        "enum": [ "switch" ]
+                      }
+                    ]
+                  },
+                  "name": {
+                     "title": "Name",
+                     "description": "The HomeKit name of the device.",
+                     "type": "string"
+                  },
+                  "gpio": {
+                     "title": "GPIO",
+                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Switch).",
+                     "type": "integer",
+                     "maximum": 31
+                  },
+                  "gpioClock": {
+                     "title": "GPIO Clock",
+                     "description": "The BCM number of the GPIO pin for the clock signal (for: Blinkt).",
+                     "type": "integer",
+                     "maximum": 31
+                  },
+                  "gpioData": {
+                     "title": "GPIO Data",
+                     "description": "The BCM number of the GPIO pin for the data signal (for: Blinkt).",
+                     "type": "integer",
+                     "maximum": 31
+                  },
+                  "nLeds": {
+                     "title": "# LEDs",
+                     "description": "The number LEDs (for: Blinkt).",
+                     "type": "integer"
+                  }
+                },
+                "allOf": [
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "device": { "const": "blinkt" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "device": { "const": "button" }
+                        },
+                        "required": ["gpio"]
+                      },
+                      {
+                        "properties": {
+                          "device": { "const": "contact" }
+                        },
+                        "required": ["gpio"]
+                      },
+                        {
+                        "properties": {
+                          "device": { "const": "fanshim" }
+                        },
+                        "not": {
+                          "required": ["gpio"]
+                        }
+                      },
+                      {
+                        "properties": {
+                          "device": { "const": "switch" }
+                        },
+                        "required": ["gpio"]
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "gpio": {}
+                        },
+                        "properties": {
+                          "device": { "const": "button" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "gpio": {}
+                        },
+                        "properties": {
+                          "device": { "const": "contact" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "gpio": {}
+                        },
+                        "properties": {
+                          "device": { "const": "switch" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "gpio": { "not": {} }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "gpioClock": {}
+                        },
+                        "properties": {
+                          "device": { "const": "blinkt" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "gpioClock": { "not": {} }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "gpioData": {}
+                        },
+                        "properties": {
+                          "device": { "const": "blinkt" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "gpioData": { "not": {} }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "nLeds": {}
+                        },
+                        "properties": {
+                          "device": { "const": "blinkt" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "nLeds": { "not": {} }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
       }
     }
-  },
-  "form": [
-    "name",
-    {
-      "type": "help",
-      "helpvalue": "RaspBerry Pis"
-    },
-    {
-      "nodescription": true,
-      "notitle": true,
-      "key": "hosts",
-      "type": "array",
-      "items": [
-        {
-          "type": "div",
-          "displayFlex": true,
-          "flex-direction": "row",
-          "items": [
-            {
-              "key": "hosts[]",
-              "required": true,
-              "flex": "1 1 50px"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+  }
 }
