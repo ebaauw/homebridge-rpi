@@ -59,8 +59,12 @@
                         "enum": [ "contact" ]
                       },
                       {
-                        "title": "Fan Shim",
+                        "title": "Fan SHIM",
                         "enum": [ "fanshim" ]
+                      },
+                      {
+                        "title": "Servo Motor",
+                        "enum": [ "servo" ]
                       },
                       {
                         "title": "Switch",
@@ -102,32 +106,12 @@
                     "oneOf": [
                       {
                         "properties": {
-                          "device": { "const": "blinkt" }
+                          "device": { "enum": ["blinkt", "fanshim"] }
                         }
                       },
                       {
                         "properties": {
-                          "device": { "const": "button" }
-                        },
-                        "required": ["gpio"]
-                      },
-                      {
-                        "properties": {
-                          "device": { "const": "contact" }
-                        },
-                        "required": ["gpio"]
-                      },
-                        {
-                        "properties": {
-                          "device": { "const": "fanshim" }
-                        },
-                        "not": {
-                          "required": ["gpio"]
-                        }
-                      },
-                      {
-                        "properties": {
-                          "device": { "const": "switch" }
+                          "device": { "enum": ["button", "contact", "servo", "switch"] }
                         },
                         "required": ["gpio"]
                       }
@@ -140,23 +124,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "const": "button" }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "gpio": {}
-                        },
-                        "properties": {
-                          "device": { "const": "contact" }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "gpio": {}
-                        },
-                        "properties": {
-                          "device": { "const": "switch" }
+                          "device": { "enum": ["button", "contact", "servo", "switch"] }
                         }
                       },
                       {
