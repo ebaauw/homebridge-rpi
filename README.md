@@ -19,6 +19,8 @@ connected to the RPi's GPIO pins:
 - Monitoring and controlling from HomeKit output devices
 connect to the RPi's GPIO pins:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
+  - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
+_Target Tilt Angle_;
 - Monitoring and controlling from HomeKit of multi-coloured LEDs of a Pimoroni
 [Blinkt!](https://shop.pimoroni.com/products/blinkt) or
 [Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi.
@@ -170,6 +172,8 @@ This can also be abbreviated
         ]
       }
 ```
+See the [WiKi](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices)
+for details about supported devices and the configuration options per device.
 
 ### Raspberry Pi Configuration
 
