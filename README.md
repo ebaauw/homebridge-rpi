@@ -1,7 +1,9 @@
 # homebridge-rpi
-[![npm](https://img.shields.io/npm/dt/homebridge-rpi.svg)](https://www.npmjs.com/package/homebridge-rpi) [![npm](https://img.shields.io/npm/v/homebridge-rpi.svg)](https://www.npmjs.com/package/homebridge-rpi)
+[![npm](https://img.shields.io/npm/dt/homebridge-rpi.svg)](https://www.npmjs.com/package/homebridge-rpi)
+[![npm](https://img.shields.io/npm/v/homebridge-rpi.svg)](https://www.npmjs.com/package/homebridge-rpi)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
+[![GitHub issues](https://img.shields.io/github/issues/ebaauw/homebridge-rpi)](https://github.com/ebaauw/homebridge-rpi/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/ebaauw/homebridge-rpi)](https://github.com/ebaauw/homebridge-rpi/pulls)
 ## Homebridge plugin for Raspberry Pi
 Copyright © 2019-2020 Erik Baauw. All rights reserved.
 
