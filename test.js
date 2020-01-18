@@ -3,27 +3,23 @@
 const Blinkt = require('./lib/Blinkt')
 const PigpioClient = require('./lib/PigpioClient')
 
-// async function sleep (ms = 100) {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => { resolve() }, ms)
-//   })
-// }
+async function delay (ms = 100) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => { resolve() }, ms)
+  })
+}
 
 class Test {
   constructor () {
     this.pi = new PigpioClient({ host: 'pi5' })
-    this.blinkt = new Blinkt(this.pi, {
-      gpioClock: 14,
-      gpioData: 15,
-      nLeds: 1
-    })
+    this.blinkt = new Blinkt(this.pi)
     process.on('SIGINT', async (signal) => {
       console.log('Got %s', signal)
       this.interrupted = true
     })
   }
 
-  async colourLoop () {
+  async colourLoop (led = 0) {
     let d
     let r = 0
     let g = 1
@@ -65,8 +61,28 @@ class Test {
         }
         g--
       }
-      this.blinkt.setLed(0, 1, r, g, b)
+      this.blinkt.setLed(led, 1, r, g, b)
       await this.blinkt.update()
+      if (this.interrupted) {
+        return
+      }
+    }
+  }
+
+  async cylon (r = 255, g = 0, b = 0) {
+    let led = 0
+    let left = false
+    this.blinkt.setLed(0, 1, r, g, b)
+    while (true) {
+      await this.blinkt.update()
+      await delay()
+      this.blinkt.shiftLeds(left)
+      led += left ? -1 : 1
+      if (led === 7) {
+        left = true
+      } else if (led === 0) {
+        left = false
+      }
       if (this.interrupted) {
         return
       }
@@ -75,7 +91,8 @@ class Test {
 
   async main () {
     await this.blinkt.init()
-    await this.colourLoop()
+    // await this.colourLoop(7)
+    await this.cylon()
     console.log('Exiting...')
     await this.blinkt.destroy()
     await this.pi.disconnect()
