@@ -85,7 +85,7 @@
                   },
                   "reversed": {
                     "title": "Reversed",
-                    "description": "The device state is reversed (for: Button, Contact Sensor).",
+                    "description": "The device state is reversed (for: Button, Contact Sensor, Switch).",
                     "type": "boolean"
                   },
                   "gpioClock": {
@@ -146,7 +146,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact"] }
+                          "device": { "enum": ["button", "contact", "switch"] }
                         }
                       },
                       {
