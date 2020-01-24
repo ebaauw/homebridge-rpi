@@ -79,9 +79,14 @@
                   },
                   "gpio": {
                      "title": "GPIO",
-                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Switch).",
+                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Servo Motor, Switch).",
                      "type": "integer",
                      "maximum": 31
+                  },
+                  "reversed": {
+                    "title": "Reversed",
+                    "description": "The device state is reversed (for: Button, Contact Sensor).",
+                    "type": "boolean"
                   },
                   "gpioClock": {
                      "title": "GPIO Clock",
@@ -130,6 +135,23 @@
                       {
                         "properties": {
                           "gpio": { "not": {} }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "reversed": {}
+                        },
+                        "properties": {
+                          "device": { "enum": ["button", "contact"] }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "reversed": { "not": {} }
                         }
                       }
                     ]
