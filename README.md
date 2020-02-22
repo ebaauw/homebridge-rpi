@@ -224,7 +224,7 @@ homebridge-rpi uses this hook to run a little shell script,
 Pi's CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
-$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd <<+'
+$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd' <<+
 #!/bin/bash
 # homebridge-rpi/opt/pigpio/cgi/vcgencmd
 # Copyright © 2019-2020 Erik Baauw.  All rights reserved.
