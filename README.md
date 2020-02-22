@@ -224,7 +224,7 @@ homebridge-rpi uses this hook to run a little shell script,
 Pi's CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
-$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd' <<+
+$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd' <<'+'
 #!/bin/bash
 # homebridge-rpi/opt/pigpio/cgi/vcgencmd
 # Copyright © 2019-2020 Erik Baauw.  All rights reserved.
@@ -237,7 +237,7 @@ exec > /opt/pigpio/vcgencmd.out
 
 echo -n "{"
 echo -n "\"date\":\"$(date -uIseconds)\","
-echo -n "\"load\":$(uptime | sed -e "s/.*load average: \([0-9]+\)[.,]\([0-9]+\),.*/\1.\2/"),"
+echo -n "\"load\":$(uptime | sed -e "s/.*load average: \([0-9]*\)[.,]\([0-9]*\),.*/\1.\2/"),"
 echo -n "\"temp\":$(vcgencmd measure_temp | sed -e "s/temp=\(.*\)'C/\1/"),"
 echo -n "\"freq\":$(vcgencmd measure_clock arm | cut -f 2 -d =),"
 echo -n "\"volt\":$(vcgencmd measure_volts | sed -e "s/volt=\(.*\)V/\1/"),"
