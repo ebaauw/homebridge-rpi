@@ -197,9 +197,12 @@ $ sudo systemctl daemon-reload
 ```
 
 #### Enable `pigpiod` Service
-To enable and start `pigpiod` as a service, issue:
+To enable `pigpiod` as a service, issue:
 ```
 $ sudo systemctl enable pigpiod
+```
+And to start it, issue:
+```
 $ sudo systemctl start pigpiod
 ```
 To check that the service is running, issue:
@@ -244,7 +247,10 @@ echo -n "\"volt\":$(vcgencmd measure_volts | sed -e "s/volt=\(.*\)V/\1/"),"
 echo -n "\"throttled\":\"$(vcgencmd get_throttled | cut -f 2 -d =)\""
 echo -n "}"
 +
-$ chmod 755 /opt/pigpio/cgi/vcgencmd
+```
+Next, make the script executable by:
+```
+$ sudo chmod 755 /opt/pigpio/cgi/vcgencmd
 ```
 To check that the script has been installed correctly, issue:
 ```
@@ -264,7 +270,7 @@ drwxr-xr-x 2 root root 4096 Aug 19 11:53 cgi
 The `.err` file should be empty.
 The `.out` file contains the script's output in JSON:
 ```
-$ json vcgencmd.out
+$ json /opt/pigpio/vcgencmd.out
 {
   "date": "2019-08-19T09:53:54+00:00",
   "load": 0.23,
@@ -287,17 +293,20 @@ $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 +
 ```
 
-To check that the files can be read, issue:
+To check that the files can be read, issue `fo` to open the file for reading:
 ```
 $ pigs fo /opt/pigpio/vcgencmd.out 1
 0
+```
+Note the returned file descriptor, in this case `0`.
+
+Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
+```
 $ pigs -a fr 0 1024
 114 {"date":"2019-08-19T09:53:54+00:00","load":0.23,"temp":42.9,"freq":1400000000,"volt":1.3688,"throttled":"0x80000"}
+```
+
+Lastly, make sure to close the file and free the file descriptor, `0`.
+```
 $ pigs fc 0
 ```
-The `fo` command opens the file for reading, returning a file descriptor, `0`
-in this example.
-This file descriptor is passed to the `fr` and `fc` commands.
-The `fr` commands reads up to 1024 bytes from the file,
-and prints them as ascii.
-The `fc` command closes the file.
