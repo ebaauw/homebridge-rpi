@@ -305,3 +305,16 @@ Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
 $ pigs fc 0
 ```
+
+### Caveats
+Homebridge RPi is a hobby project of mine, provided as-is, with no warranty whatsoever.  I've been running it successfully at my home for months, but your mileage might vary.
+
+The HomeKit terminology needs some getting used to.
+An _accessory_ more or less corresponds to a physical device, accessible from your iOS device over WiFi or Bluetooth.
+A _bridge_ (like Homebridge) is an accessory that provides access to other, bridged, accessories.
+An accessory might provide multiple _services_.
+Each service corresponds to a virtual device (like a lightbulb, switch, motion sensor, ..., but also: a programmable switch button, accessory information, battery status).
+Siri interacts with services, not with accessories.
+A service contains one or more _characteristics_.
+A characteristic is like a service attribute, which might be read or written by HomeKit apps.
+You might want to checkout Apple's [HomeKit Accessory Simulator](https://developer.apple.com/documentation/homekit/testing_your_app_with_the_homekit_accessory_simulator), which is distributed as an additional tool for `Xcode`.
