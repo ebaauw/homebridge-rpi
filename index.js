@@ -9,5 +9,5 @@ const RpiPlatform = require('./lib/RpiPlatform')
 const packageJson = require('./package.json')
 
 module.exports = function (homebridge) {
-  RpiPlatform.loadPlatform(homebridge, packageJson, 'Rpi', RpiPlatform)
+  RpiPlatform.loadPlatform(homebridge, packageJson, 'RPi', RpiPlatform)
 }
