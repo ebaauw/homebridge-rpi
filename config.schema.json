@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "Rpi",
+  "pluginAlias": "RPi",
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "Homebridge plugin for Raspberry Pi",
@@ -11,7 +11,7 @@
         "description": "Plugin name as displayed in the homebridge log.",
         "type": "string",
         "required": true,
-        "default": "Rpi"
+        "default": "RPi"
       },
       "hosts": {
         "title": "Raspberry Pis",
