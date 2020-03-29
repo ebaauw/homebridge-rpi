@@ -93,13 +93,13 @@ It takes a `-h` or `--help` argument to provide a brief overview of
 its functionality and command-line arguments.
 
 ### Installation
-To install Homebridge ZP:
+To install Homebridge RPi:
 - Follow the instructions on the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) to install Node.js and Homebridge;
-- Install the Homebridge ZP plugin through Homebridge Config UI X or manually by:
+- Install the Homebridge RPi plugin through Homebridge Config UI X or manually by:
   ```
-  $ sudo npm -g i homebridge-zp
+  $ sudo npm -g i homebridge-rpi
   ```
-- Edit `config.json` and add the `ZP` platform provided by Homebridge ZP, see [**Configuration**](#configuration).
+- Edit `config.json` and add the `RPi` platform provided by Homebridge RPi, see [**Homebridge Configuration**](#homebridge-configuration).
 
 ### Homebridge Configuration
 The configuration for Homebridge RPi can become rather complex, with nested
@@ -113,19 +113,20 @@ as a platform plugin:
 ```json
 "platforms": [
   {
-    "platform": "Rpi"
+    "platform": "RPi"
   }
 ]
 ```
 With this simple setup, Homebridge RPi exposes the Raspberry Pi that it runs on,
 connecting to the `pigpiod` daemon over `localhost`.
-Note that you still need to configure the RPi for Homebridge RPi to work.
+Note that you still need to configure the RPi for Homebridge RPi to work,
+see [**Raspberry Pi Configuration**](#raspberry-pi-configuration) below.
 
 To expose other or multiple RPis, specify a `hosts` array:
 ```json
 "platforms": [
   {
-    "platform": "Rpi",
+    "platform": "RPi",
     "hosts": [
       {
         "host": "pi1"
@@ -307,6 +308,43 @@ Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
 $ pigs fc 0
 ```
+### Troubleshooting
+
+#### Check Dependencies
+If you run into Homebridge startup issues, please double-check what versions of Node.js and of Homebridge have been installed.
+Homebridge RPi has been developed and tested using the [latest LTS](https://nodejs.org/en/about/releases/) version of Node.js and the [latest](https://www.npmjs.com/package/homebridge) version of Homebridge.
+Other versions might or might not work - I simply don't have the bandwidth to test these.
+
+#### Run Homebridge RPi Solo
+If you run into Homebridge startup issues, please run a separate instance of Homebridge with only Homebridge RPi (and Homebridge Config UI X) enabled in `config.json`.
+This way, you can determine whether the issue is related to Homebridge RPi itself, or to the interaction of multiple Homebridge plugins in your setup.
+You can start this separate instance of Homebridge on a different system, as a different user, or from a different user directory (specified by the `-U` flag).
+Make sure to use a different Homebridge `name`, `username`, and (if running on the same system) `port` in the `config.json` for each instance.
+
+#### Debug Log File
+Homebridge RPi outputs an info message for each HomeKit characteristic value it sets and for each HomeKit characteristic value change notification it receives.
+When Homebridge is started with `-D`, Homebridge RPi outputs a debug message for each request it makes to `pigpiod` to change the GPIO pin status.
+
+To capture these messages into a log file do the following:
+- If you're running Homebridge as a service, stop that service;
+- Run Homebridge manually, capturing the output into a file, by issuing:
+  ```
+  $ homebridge -CD 2>&1 | tee homebridge.log
+  ```
+- Interact with your devices, through their native app and or through HomeKit to trigger the issue;
+- Hit interrupt (ctrl-C) to stop Homebridge;
+- If you're running Homebridge as a service, restart the service;
+- Compress the log file by issuing:
+  ```
+  $ gzip homebridge.log
+  ```
+
+#### Getting Help
+If you have a question, please post a message to the **#rpi** channel of the Homebridge community on [Discord](https://discord.gg/yGvADWt).
+
+If you encounter a problem, please open an issue on [GitHub](https://github.com/ebaauw/homebridge-rpi/issues).
+Please **attach** a copy of `homebridge.log.gz` to the issue, see [**Debug Log File**](#debug-log-file).
+Please do **not** copy/paste large amounts of log output.
 
 ### Caveats
 Homebridge RPi is a hobby project of mine, provided as-is, with no warranty whatsoever.  I've been running it successfully at my home for months, but your mileage might vary.
