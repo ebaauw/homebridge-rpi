@@ -224,7 +224,8 @@ substituting `xx.xx.xx.xx` with the IP address of the remote Raspberry Pi.
 `pigpio` provides a hook to execute a shell command remotely.
 Homebridge RPi uses this hook to run a little shell script,
 [`vcgencmd`](./opt/pigpio/cgi/vcgencmd), that calls `vcgencmd` to get the
-Pi's CPU temperature, frequency, voltage, and throttling information.
+Pi's date, uptime, system load, CPU temperature, frequency, voltage, and
+throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
 $ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd' <<'+'
@@ -240,6 +241,7 @@ exec > /opt/pigpio/vcgencmd.out
 
 echo -n "{"
 echo -n "\"date\":\"$(date -uIseconds)\","
+echo -n "\"boot\":\"$(uptime -s | sed -e "s/\(.*\) \(.*\)/\1T\2/")\","
 echo -n "\"load\":$(uptime | sed -e "s/.*load average: \([0-9]*\)[.,]\([0-9]*\),.*/\1.\2/"),"
 echo -n "\"temp\":$(vcgencmd measure_temp | sed -e "s/temp=\(.*\)'C/\1/"),"
 echo -n "\"freq\":$(vcgencmd measure_clock arm | cut -f 2 -d =),"
@@ -272,14 +274,16 @@ The `.out` file contains the script's output in JSON:
 ```
 $ json /opt/pigpio/vcgencmd.out
 {
-  "date": "2019-08-19T09:53:54+00:00",
-  "load": 0.23,
-  "temp": 42.9,
+  "date": "2020-04-11T08:31:04+00:00",
+  "boot": "2020-03-11T17:11:05",
+  "load": 0.27,
+  "temp": 55.3,
   "freq": 1400000000,
   "volt": 1.3688,
   "throttled": "0x80000"
 }
 ```
+Note that `date` is in UTC, but `boot` is in local time.
 
 #### File Access
 `pigpio` provides a hook to access files remotely.
@@ -308,6 +312,31 @@ Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
 $ pigs fc 0
 ```
+
+#### Final Check
+On the server running Homebridge, issue `rpi -H `_host_` info`,
+substituting the remote Pi's address or hostname.
+This should return the Pi's status (serial number redacted):
+```
+$ rpi -H pi1 info
+{
+  "model": "3B+",
+  "revision": "1.3",
+  "processor": "BCM2837",
+  "memory": "1GB",
+  "manufacturer": "Sony UK",
+  "gpioMask": "0xffffffc",
+  "serial": "000000000xxxxxxx",
+  "date": "2020-04-11T08:49:49+00:00",
+  "boot": "2020-03-11T17:11:05",
+  "load": 0.46,
+  "temp": 54.8,
+  "freq": 1400000000,
+  "volt": 1.3688,
+  "throttled": "0x80000"
+}
+```
+
 ### Troubleshooting
 
 #### Check Dependencies
