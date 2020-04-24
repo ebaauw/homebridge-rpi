@@ -91,7 +91,7 @@ class Main extends homebridgeLib.CommandLineTool {
     try {
       this._clargs = this.parseArguments()
       this.pi = new PigpioClient(this._clargs.options)
-      // this.pi.on('error', (error) => { this.error(error) })
+      this.pi.on('error', (error) => { this.error(error) })
       await this.pi.connect()
       this.debug('connected to pigpiod at %s:%d', this.pi.hostname, this.pi.port)
       this.name = 'rpi ' + this._clargs.command
