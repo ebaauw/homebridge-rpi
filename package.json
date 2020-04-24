@@ -22,6 +22,7 @@
     "node": "^12.16.2"
   },
   "dependencies": {
+    "debug": "~4.1.1",
     "homebridge-lib": "~4.5.7"
   },
   "scripts": {
