@@ -88,6 +88,11 @@
                     "description": "The device state is reversed (for: Button, Contact Sensor, Switch).",
                     "type": "boolean"
                   },
+                  "pulse": {
+                    "title": "Pulse",
+                    "description": "Send pulse when turning the switch on.",
+                    "type": "boolean",
+                  },
                   "gpioClock": {
                      "title": "GPIO Clock",
                      "description": "The BCM number of the GPIO pin for the clock signal (for: Blinkt).",
@@ -203,6 +208,23 @@
                       {
                         "properties": {
                           "nLeds": { "not": {} }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "pulse": {}
+                        },
+                        "properties": {
+                          "device": { "const": "switch" }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "pulse": { "not": {} }
                         }
                       }
                     ]
