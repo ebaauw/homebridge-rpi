@@ -369,7 +369,7 @@ To capture these messages into a log file do the following:
   ```
 
 #### Getting Help
-If you have a question, please post a message to the **#rpi** channel of the Homebridge community on [Discord](https://discord.gg/yGvADWt).
+If you have a question, please post a message to the **#homebridge-rpi** channel of the Homebridge community on [Discord](https://discord.gg/yGvADWt).
 
 If you encounter a problem, please open an issue on [GitHub](https://github.com/ebaauw/homebridge-rpi/issues).
 Please **attach** a copy of `homebridge.log.gz` to the issue, see [**Debug Log File**](#debug-log-file).
