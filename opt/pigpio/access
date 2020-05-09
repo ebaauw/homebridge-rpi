@@ -1,2 +1,2 @@
 /proc/cpuinfo r
-/opt/pigpio/vcgencmd.out r
+/tmp/getState.json r
