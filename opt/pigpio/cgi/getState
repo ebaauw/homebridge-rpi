@@ -1,0 +1,21 @@
+#!/bin/bash
+# homebridge-rpi/opt/pigpio/cgi/getState
+# Copyright © 2019-2020 Erik Baauw.  All rights reserved.
+#
+# Homebridge plugin for Raspberry Pi.
+
+umask 022
+exec 2> //dev/null
+exec > /tmp/getState.json
+
+cat - <<+
+{\
+"date":"$(date -uIseconds)",\
+"boot": "$(uptime -s)",\
+"load":"$(uptime)",\
+"temp":"$(vcgencmd measure_temp)",\
+"freq":"$(vcgencmd measure_clock arm)",\
+"volt":"$(vcgencmd measure_volts)",\
+"throttled":"$(vcgencmd get_throttled)"\
+}
++
