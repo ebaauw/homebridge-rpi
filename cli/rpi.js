@@ -10,7 +10,7 @@
 const chalk = require('chalk')
 const homebridgeLib = require('homebridge-lib')
 const PigpioClient = require('../lib/PigpioClient')
-const RpiRevision = require('../lib/RpiRevision')
+const RpiInfo = require('../lib/RpiInfo')
 const packageJson = require('../package.json')
 
 const PI_CMD = PigpioClient.commands
@@ -91,14 +91,15 @@ class Main extends homebridgeLib.CommandLineTool {
     try {
       this._clargs = this.parseArguments()
       this.pi = new PigpioClient(this._clargs.options)
+      this.pi.on('connect', () => {
+        this.debug('connected to pigpiod at %s:%d', this.pi.hostname, this.pi.port)
+      })
       this.pi.on('error', (error) => { this.error(error) })
-      await this.pi.connect()
-      this.debug('connected to pigpiod at %s:%d', this.pi.hostname, this.pi.port)
       this.name = 'rpi ' + this._clargs.command
       this.usage = `${b('rpi')} ${usage[this._clargs.command]}`
       this.help = help[this._clargs.command]
       await this[this._clargs.command](this._clargs.args)
-      await this.pi.disconnect()
+      // await this.pi.disconnect()
     } catch (error) {
       this.error(error)
     }
@@ -140,33 +141,27 @@ class Main extends homebridgeLib.CommandLineTool {
     parser.parse(...args)
     const jsonFormatter = new homebridgeLib.JsonFormatter(clargs.options)
 
-    const hwver = await this.pi.command(PI_CMD.HWVER)
-    this.debug('%s: hwver: %j', this.pi.hostname, hwver)
-    const rpi = new RpiRevision(hwver)
-
-    let serial = ''
-    const cpuinfo = await this.pi.readFile('/proc/cpuinfo')
-    const a = /Serial\s*: ([0-9a-f]{16})/.exec(cpuinfo)
-    if (a != null) {
-      serial = a[1].toUpperCase()
-      this.debug('%s: serial: %j', this.pi.hostname, serial)
+    let info
+    let state
+    if (this._clargs.options.host == null) {
+      info = await RpiInfo.getCpuInfo()
+      try {
+        state = await RpiInfo.getState()
+      } catch (error) {
+        // this.error(error)
+        this.error(error.message.slice(0, error.message.length - 1)) // FIXME
+        return
+      }
+    } else {
+      await this.pi.connect()
+      const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
+      info = RpiInfo.parseCpuInfo(cpuInfo)
+      await this.pi.shell('getState')
+      const text = await this.pi.readFile('/tmp/getState.json')
+      state = RpiInfo.parseState(text)
+      await this.pi.disconnect()
     }
-
-    await this.pi.command(PI_CMD.SHELL, 0, 0, Buffer.from('vcgencmd'))
-    const text = await this.pi.readFile('/opt/pigpio/vcgencmd.out')
-    const state = JSON.parse(text)
-    this.debug('%s: vcgencmd: %j', this.pi.hostname, state)
-
-    const result = Object.assign({
-      model: rpi.model,
-      revision: rpi.revision,
-      processor: rpi.processor,
-      memory: rpi.memory,
-      manufacturer: rpi.manufacturer,
-      gpioMask: '0x' + rpi.gpioMask.toString(16),
-      serial: serial
-    }, state)
-    const json = jsonFormatter.stringify(result)
+    const json = jsonFormatter.stringify(Object.assign(info, state))
     this.print(json)
   }
 
