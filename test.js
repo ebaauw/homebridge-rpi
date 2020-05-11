@@ -90,12 +90,16 @@ class Test {
   }
 
   async main () {
-    await this.blinkt.init()
-    // await this.colourLoop(7)
-    await this.cylon()
-    console.log('Exiting...')
-    await this.blinkt.destroy()
-    await this.pi.disconnect()
+    try {
+      await this.blinkt.init()
+      await this.colourLoop(7)
+      await this.cylon()
+      console.log('Exiting...')
+      await this.blinkt.destroy()
+      await this.pi.disconnect()
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
