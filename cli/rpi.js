@@ -23,12 +23,14 @@ class UsageError extends Error {}
 const usage = {
   rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
   info: `${b('info')} [${b('-hns')}]`,
+  test: `${b('test')} [${b('-hns')}]`,
   closeHandles: `${b('closeHandles')} [${b('-h')}]`
 }
 
 const description = {
   rpi: 'Command line interface to Raspberry Pi.',
-  info: 'Print Raspberry Pi properties.',
+  info: 'Get Raspberry Pi properties and state.',
+  test: 'Repeated get Raspberry Pi properties and state.',
   closeHandles: 'Force-close stale pigpiod handles.'
 }
 
@@ -55,6 +57,9 @@ Commands:
   ${usage.info}
   ${description.info}
 
+  ${usage.test}
+  ${description.test}
+
   ${usage.closeHandles}
   ${description.closeHandles}
 
@@ -62,6 +67,19 @@ For more help, issue: ${b('rpi')} ${u('command')} ${b('-h')}`,
   info: `${description.info}
 
 Usage: ${b('rpi')} ${usage.info}
+
+Parameters:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.
+
+  ${b('-n')}, ${b('--noWhiteSpace')}
+  Do not include spaces nor newlines in output.
+
+  ${b('-s')}, ${b('--sortKeys')}
+  Sort object key/value pairs alphabetically on key.`,
+  test: `${description.test}
+
+Usage: ${b('rpi')} ${usage.test}
 
 Parameters:
   ${b('-h')}, ${b('--help')}
@@ -91,15 +109,25 @@ class Main extends homebridgeLib.CommandLineTool {
     try {
       this._clargs = this.parseArguments()
       this.pi = new PigpioClient(this._clargs.options)
-      this.pi.on('connect', () => {
-        this.debug('connected to pigpiod at %s:%d', this.pi.hostname, this.pi.port)
+      this.pi.on('error', (error) => { this.warn(error) })
+      this.pi.on('connect', (hostname, port) => {
+        this.debug('connected to pigpio at %s:%d', hostname, port)
       })
-      this.pi.on('error', (error) => { this.error(error) })
+      this.pi.on('disconnect', (hostname, port) => {
+        this.debug('disconnected from pigpio at %s:%d', hostname, port)
+      })
+      this.pi.on('command', (cmd, p1, p2, p3) => {
+        this.debug('command %s %d %d %j', PigpioClient.commandName(cmd), p1, p2, p3)
+      })
+      this.pi.on('response', (cmd, status, result) => {
+        this.debug('command %s => %d', PigpioClient.commandName(cmd), status)
+        // this.debug('command %s => %d %j', PigpioClient.commandName(cmd), status, result)
+      })
       this.name = 'rpi ' + this._clargs.command
       this.usage = `${b('rpi')} ${usage[this._clargs.command]}`
       this.help = help[this._clargs.command]
       await this[this._clargs.command](this._clargs.args)
-      // await this.pi.disconnect()
+      await this.pi.disconnect()
     } catch (error) {
       this.error(error)
     }
@@ -153,23 +181,37 @@ class Main extends homebridgeLib.CommandLineTool {
         return
       }
     } else {
-      await this.pi.connect()
-      const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
-      info = RpiInfo.parseCpuInfo(cpuInfo)
-      await this.pi.shell('getState')
-      const text = await this.pi.readFile('/tmp/getState.json')
-      state = RpiInfo.parseState(text)
-      await this.pi.disconnect()
+      try {
+        const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
+        info = RpiInfo.parseCpuInfo(cpuInfo)
+        await this.pi.shell('getState')
+        const text = await this.pi.readFile('/tmp/getState.json')
+        state = RpiInfo.parseState(text)
+      } catch (error) {
+        this.error(error)
+        return
+      }
     }
     const json = jsonFormatter.stringify(Object.assign(info, state))
     this.print(json)
   }
 
+  async test (...args) {
+    for (;;) {
+      try {
+        await this.info(...args)
+      } catch (error) {
+        this.warn(error)
+      }
+      await homebridgeLib.timeout(5000)
+    }
+  }
+
   async closeHandles (...args) {
     const parser = new homebridgeLib.CommandLineParser(packageJson)
-    // const clargs = { options: {} }
     parser.help('h', 'help', this.help)
     parser.parse(...args)
+    await this.pi.connect()
     let nClosed = 0
     for (let handle = 0; handle <= 15; handle++) {
       try {
