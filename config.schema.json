@@ -32,6 +32,11 @@
               "description": "The hostname of the Raspberry Pi.",
               "type": "string"
             },
+            "hidden": {
+              "title": "Hidden",
+              "description": "Do not expose a service for the Raspberry Pi itself.",
+              "type": "boolean"
+            },
             "devices": {
               "title": "Devices",
               "notitle": true,
