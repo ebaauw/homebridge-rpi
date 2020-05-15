@@ -18,18 +18,14 @@
 ## Homebridge plugin for Raspberry Pi
 Copyright © 2019-2020 Erik Baauw. All rights reserved.
 
-This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes a
-Raspberry Pi and its GPIO-connected devices to HomeKit.
+This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to HomeKit
+Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
 It provides the following features:
-- Monitoring from HomeKit of the RPi's CPU: temperature, frequency, voltage,
-and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for
-the temperature;
-- Monitoring and controlling from HomeKit of input devices
-connected to the RPi's GPIO pins:
+- Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
+- Monitoring and controlling from HomeKit of input devices connected to the Pi's GPIO pins:
   - Buttons;
   - Contact sensors (incl. Eve history);
-- Monitoring and controlling from HomeKit output devices
-connect to the RPi's GPIO pins:
+- Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
   - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
 _Target Tilt Angle_;
@@ -69,8 +65,8 @@ This daemon is part of the [`pigpio`](https://github.com/joan2937/pigpio)
 library, which is included in Raspbian.
 While this daemon comes with Raspbian, it needs to be enabled and
 configured for use by Homebridge RPi, see [**Installation**](#installation).  
-If you run Homebridge in a container on the Raspberry Pi, let
-Homebridge RPi connect to `pigpiod` running on the host.
+<br>If you run Homebridge in a container on the Raspberry Pi, let
+Homebridge RPi connect remotely to (the `pigpiod` daemon running on) the host.
 Do _not_ try to run `pigpiod` in the container.
 
 You need a server to run Homebridge.
@@ -99,7 +95,14 @@ To install Homebridge RPi:
   ```
   $ sudo npm -g i homebridge-rpi
   ```
-- Edit `config.json` and add the `RPi` platform provided by Homebridge RPi, see [**Homebridge Configuration**](#homebridge-configuration).
+- Edit `config.json` and add the `RPi` platform provided by Homebridge RPi, see [**Homebridge Configuration**](#homebridge-configuration);
+- If you want to expose devices connected to the GPIO pins on the local
+Raspberry Pi, enable the `pigpiod` daemon,
+see [**Local Raspberry Pi Configuration**](#local-raspberry-pi-configuration);
+- If you want to expose (devices connected to the GPIO pins on) a remote
+Raspberry Pi, enable and configure the `pigpiod` daemon on each remote
+Raspberry Pi,
+see [**Remote Raspberry Pi Configuration**](#remote-raspberry-pi-configuration).
 
 ### Homebridge Configuration
 The configuration for Homebridge RPi can become rather complex, with nested
@@ -108,8 +111,8 @@ Make sure to use a JSON linter/beautifier when editing config.json.
 Alternatively, edit the configuration using the Homebridge RPi settings in
 Homebridge Config UI X.
 
-In homebridge's config.json you need to specify Homebridge RPi
-as a platform plugin:
+#### Local Raspberry Pi
+In homebridge's config.json you need to specify Homebridge RPi as a platform plugin:
 ```json
 "platforms": [
   {
@@ -117,33 +120,55 @@ as a platform plugin:
   }
 ]
 ```
-With this simple setup, Homebridge RPi exposes the Raspberry Pi that it runs on,
-connecting to the `pigpiod` daemon over `localhost`.
-Note that you still need to configure the RPi for Homebridge RPi to work,
-see [**Raspberry Pi Configuration**](#raspberry-pi-configuration) below.
+With this simple setup, Homebridge RPi exposes the Raspberry Pi that it runs on.
+Note that this will expose nothing if you run Homebridge RPi on different
+hardware, in a container, or on a virtual machine.
+In those cases, configure Homebridge RPi to connect to Remote Rapyberry Pi.
 
-To expose other or multiple RPis, specify a `hosts` array:
+The default configuration can also be specified explicitly:
 ```json
 "platforms": [
   {
     "platform": "RPi",
     "hosts": [
       {
-        "host": "pi1"
-      },
-      {
-        "host": "192.168.1.11",
-        "name": "pi2"
+        "host": "localhost"
       }
     ]
   }
 ]
 ```
+Make sure the user running Homebridge is a member of the `video` group.
 
-To expose devices connected to a GPIO pin, specify a `devices` array per host:
+#### Local GPIO Devices
+To expose devices connected to a GPIO pin, specify a `devices` array for the host:
+```json
+"platforms": [
+  {
+    "platform": "RPi",
+    "hosts": [
+      {
+        "host": "localhost",
+        "devices": [
+          {
+            "device": "fanshim"
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+Homebridge RPi connects to the local `pigpiod` daemon to interact with the GPIO pins.
+Make sure to enable the `pidpiod` service,
+see [**Local Raspberry Pi Configuration**](#local-raspberry-pi-configuration).
+
+The example above exposes a Pimoroni Fan SHIM.
+This device actually contains three different GPIO devices,
+which can also be specified individually:
 ```json
       {
-        "host": "pi1",
+        "host": "localhost",
         "devices": [
           {
             "device": "blinkt",
@@ -165,26 +190,132 @@ To expose devices connected to a GPIO pin, specify a `devices` array per host:
         ]
       }
 ```
-This can also be abbreviated
-```json
-      {
-        "host": "pi1",
-        "devices": [
-          {
-            "device": "fanshim"
-          }
-        ]
-      }
-```
 See the [WiKi](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices)
 for details about supported devices and the configuration options per device.
+Note the the GPIO pins are specified by Broadcom (or BCM) number,
+not by physical pin number, see [pinout.xyz](https://pinout.xyz).
 
-### Raspberry Pi Configuration
-Note that you need to execute the following steps on each of the Raspberry Pi
-computers you want Homebridge RPi to expose.
+#### Remote Raspberry Pi
+To expose one or more remote Raspberry Pi computers, specify multiple entries in
+the `hosts` array:
+```json
+"platforms": [
+  {
+    "platform": "RPi",
+    "hosts": [
+      {
+        "host": "pi1"
+      },
+      {
+        "host": "192.168.1.11",
+        "name": "pi2"
+      }
+    ]
+  }
+]
+```
+Note that you need to configure each remote Pi for Homebridge RPi to work,
+see [**Remote Raspberry Pi Configuration**](#remote-raspberry-pi-configuration) below.
+
+#### Remote GPIO Devices
+To expose devices connected to a remote Pi, specify a `devices` array for each
+object in the `hosts` array:
+```json
+{
+  "platform": "RPi",
+  "hosts": [
+    {
+      "host": "pi1"
+    },
+    {
+      "host": "pi2",
+      "devices": [
+        {
+          "device": "fanshim"
+        }
+      ]
+    },
+    {
+      "host": "pi3",
+      "devices": [
+        {
+          "device": "blinkt"
+        }
+      ]
+    },
+    {
+      "host": "pi4",
+      "devices": [
+        {
+          "device": "servo",
+          "name": "Robot Arm",
+          "gpio": 7
+        }
+      ]
+    }
+  ]
+}
+```
+Note that you need to configure each remote Pi for Homebridge RPi to work,
+see [**Remote Raspberry Pi Configuration**](#remote-raspberry-pi-configuration) below.
+
+### Local Raspberry Pi Configuration
+Homebridge RPi uses local commands to get the state of the local Raspberry Pi.
+To verify that these are working, login as the user running Homebridge and issue:
+```
+$ rpi info
+{
+  "id": "0000000069265134",
+  "manufacturer": "Sony UK",
+  "memory": "1GB",
+  "model": "3B",
+  "processor": "BCM2837",
+  "revision": "1.2",
+  "gpioMask": 268435452,
+  "gpioMaskSerial": 49152,
+  "date": "2020-05-09T20:50:55.000Z",
+  "boot": "2020-04-12T14:35:04.000Z",
+  "load": 0.36,
+  "temp": 63.4,
+  "freq": 1200000000,
+  "volt": 1.3375,
+  "throttled": 131072
+}
+```
+If the user isn't a member of the `video` group, you will get an error message:
+```
+$ rpi info
+rpi info: error: Command failed: vcgencmd measure_temp
+```
+
+If you expose devices connected to the GPIO pins on the local Raspberry Pi,
+you need to enable the `pidpiod` service.
+
+#### Enable `pigpiod` Service
+Raspbian comes with a standard service for `pigpiod`,
+in `/lib/systemd/system/pigpiod.service`.
+By default, this service is disabled.
+To enable the service, so it starts automatically on system boot, issue:
+```
+$ sudo systemctl enable pigpiod
+```
+And to start it now, issue:
+```
+$ sudo systemctl start pigpiod
+```
+To check that the service is running, issue:
+```
+$ pigs hwver
+10494163
+```
+This returns the Pi's hardware revision (in decimal).
+
+### Remote Raspberry Pi Configuration
+Note that you need to execute the following steps on each of the remote
+Raspberry Pi computers you want Homebridge RPi to expose.
 
 #### Configure `pigpiod` Service
-Raspbian comes with a service definition for `pigpiod`, in
+Raspbian comes with a standard service for `pigpiod`, in
 `/lib/systemd/system/pigpiod.service`.
 By default `pigpiod` won't accept remote connections, due to the `-l` option.
 To enable remote connections, run `sudo raspi-config` and set _Remote GPIO_ (P8)
@@ -197,11 +328,11 @@ $ sudo systemctl daemon-reload
 ```
 
 #### Enable `pigpiod` Service
-To enable `pigpiod` as a service, issue:
+To enable the `pigpiod` service, so it starts automatically on system boot, issue:
 ```
 $ sudo systemctl enable pigpiod
 ```
-And to start it, issue:
+And to start it now, issue:
 ```
 $ sudo systemctl start pigpiod
 ```
@@ -218,69 +349,67 @@ another Raspberry Pi:
 $ PIGPIO_ADDR=xx.xx.xx.xx pigs hwver
 10494163
 ```
-substituting `xx.xx.xx.xx` with the IP address of the remote Raspberry Pi.
+substituting `xx.xx.xx.xx` with the IP address of the Raspberry Pi running
+`pigpiod`.
 
-#### Install `vcgencmd` Script
+#### Install `getState` Script
 `pigpio` provides a hook to execute a shell command remotely.
 Homebridge RPi uses this hook to run a little shell script,
-[`vcgencmd`](./opt/pigpio/cgi/vcgencmd), that calls `vcgencmd` to get the
-Pi's date, uptime, system load, CPU temperature, frequency, voltage, and
-throttling information.
+[`getState`](./opt/pigpio/cgi/geeState), that calls `date`, `uptime`, and
+`vcgencmd` to get the Pi's date, uptime, system load, and the Pi's
+CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigio/cgi` by:
 ```
-$ sudo sh -c 'cat > /opt/pigpio/cgi/vcgencmd' <<'+'
+$ sudo sh -c 'cat > /opt/pigpio/cgi/getState' <<'+++'
 #!/bin/bash
-# homebridge-rpi/opt/pigpio/cgi/vcgencmd
+# homebridge-rpi/opt/pigpio/cgi/getState
 # Copyright © 2019-2020 Erik Baauw.  All rights reserved.
 #
 # Homebridge plugin for Raspberry Pi.
 
 umask 022
-exec 2> /opt/pigpio/vcgencmd.err
-exec > /opt/pigpio/vcgencmd.out
+exec 2> //dev/null
+exec > /tmp/getState.json
 
-echo -n "{"
-echo -n "\"date\":\"$(date -uIseconds)\","
-echo -n "\"boot\":\"$(uptime -s | sed -e "s/\(.*\) \(.*\)/\1T\2/")\","
-echo -n "\"load\":$(uptime | sed -e "s/.*load average: \([0-9]*\)[.,]\([0-9]*\),.*/\1.\2/"),"
-echo -n "\"temp\":$(vcgencmd measure_temp | sed -e "s/temp=\(.*\)'C/\1/"),"
-echo -n "\"freq\":$(vcgencmd measure_clock arm | cut -f 2 -d =),"
-echo -n "\"volt\":$(vcgencmd measure_volts | sed -e "s/volt=\(.*\)V/\1/"),"
-echo -n "\"throttled\":\"$(vcgencmd get_throttled | cut -f 2 -d =)\""
-echo -n "}"
+cat - <<+
+{\
+"date":"$(date -uIseconds)",\
+"boot": "$(uptime -s)",\
+"load":"$(uptime)",\
+"temp":"$(vcgencmd measure_temp)",\
+"freq":"$(vcgencmd measure_clock arm)",\
+"volt":"$(vcgencmd measure_volts)",\
+"throttled":"$(vcgencmd get_throttled)"\
+}
 +
++++
 ```
 Next, make the script executable by:
 ```
-$ sudo chmod 755 /opt/pigpio/cgi/vcgencmd
+$ sudo chmod 755 /opt/pigpio/cgi/getState
 ```
 To check that the script has been installed correctly, issue:
 ```
-$ pigs shell vcgencmd
+$ pigs shell getState
 0
 ```
 The return status `0` indicates success.
-This should have created two output files in `/opt/pigpio`:
+This should have created an output file in `/opt/pigpio`:
 ```
-$ ls -l /opt/pigpio
-total 12
--rw-r--r-- 1 root root  152 Aug 19 11:51 access
-drwxr-xr-x 2 root root 4096 Aug 19 11:53 cgi
--rw-r--r-- 1 root root    0 Aug 19 11:53 vcgencmd.err
--rw-r--r-- 1 root root  114 Aug 19 11:53 vcgencmd.out
+$ ls -l /tmp/getState.json
+-rw-r--r-- 1 root root 256 May  9 23:45 /tmp/getState.json
 ```
-The `.err` file should be empty.
-The `.out` file contains the script's output in JSON:
+The `.json` file contains the script's output in JSON:
 ```
-$ json /opt/pigpio/vcgencmd.out
+$ json /tmp/getState.json
 {
-  "date": "2020-04-11T08:31:04+00:00",
-  "boot": "2020-03-11T17:11:05",
-  "load": 0.27,
-  "temp": 55.3,
-  "freq": 1400000000,
-  "volt": 1.3688,
-  "throttled": "0x80000"
+  "date": "2020-05-09T21:45:52+00:00",
+  "boot": "2020-04-12 16:35:04",
+  "load": " 23:45:52 up 27 days,  7:10,  3 users,  load average: 0.24, 0.17, 0.17",
+  "temp": "temp=61.8'C",
+  "freq": "frequency(45)=600000000",
+  "volt": "volt=1.2000V",
+  "throttled": "throttled=0x20000"
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
@@ -288,17 +417,17 @@ Note that `date` is in UTC, but `boot` is in local time.
 #### File Access
 `pigpio` provides a hook to access files remotely.
 Homebridge RPi uses this hook to get the Raspberry Pi's serial number from
-`/proc/cpuinfo` and to get the output from the `vcgencmd` script.
+`/proc/cpuinfo` and to get the output from the `getState` script.
 These files need to be whitelisted, in `/opt/pigpio/access`:
 ```
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
-/opt/pigpio/vcgencmd.out r
+/tmp/getState.json r
 +
 ```
 To check that the files can be read, issue `fo` to open the file for reading:
 ```
-$ pigs fo /opt/pigpio/vcgencmd.out 1
+$ pigs fo /tmp/getState.json 1
 0
 ```
 Note the returned file descriptor, in this case `0`.
@@ -306,7 +435,7 @@ Note the returned file descriptor, in this case `0`.
 Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
 ```
 $ pigs -a fr 0 1024
-114 {"date":"2019-08-19T09:53:54+00:00","load":0.23,"temp":42.9,"freq":1400000000,"volt":1.3688,"throttled":"0x80000"}
+255 {"date":"2020-05-09T21:47:22+00:00","boot": "2020-04-12 16:35:04","load":" 23:47:22 up 27 days,  7:12,  3 users,  load average: 0.08, 0.13, 0.16","temp":"temp=62.3'C","freq":"frequency(45)=600000000","volt":"volt=1.2000V","throttled":"throttled=0x20000"}
 ```
 Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
@@ -318,22 +447,23 @@ On the server running Homebridge, issue `rpi -H `_host_` info`,
 substituting the remote Pi's address or hostname.
 This should return the Pi's status (serial number redacted):
 ```
-$ rpi -H pi1 info
+$ rpi -H pi4 info
 {
-  "model": "3B+",
-  "revision": "1.3",
-  "processor": "BCM2837",
-  "memory": "1GB",
+  "id": "00000000xxxxxxxx",
   "manufacturer": "Sony UK",
-  "gpioMask": "0xffffffc",
-  "serial": "000000000xxxxxxx",
-  "date": "2020-04-11T08:49:49+00:00",
-  "boot": "2020-03-11T17:11:05",
-  "load": 0.46,
-  "temp": 54.8,
-  "freq": 1400000000,
-  "volt": 1.3688,
-  "throttled": "0x80000"
+  "memory": "1GB",
+  "model": "3B",
+  "processor": "BCM2837",
+  "revision": "1.2",
+  "gpioMask": 268435452,
+  "gpioMaskSerial": 49152,
+  "date": "2020-05-09T21:49:57.000Z",
+  "boot": "2020-04-12T14:35:04.000Z",
+  "load": 0.27,
+  "temp": 63.4,
+  "freq": 1200000000,
+  "volt": 1.3375,
+  "throttled": 131072
 }
 ```
 
