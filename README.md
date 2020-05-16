@@ -361,7 +361,7 @@ Homebridge RPi uses this hook to run a little shell script,
 [`getState`](./opt/pigpio/cgi/geeState), that calls `date`, `uptime`, and
 `vcgencmd` to get the Pi's date, uptime, system load, and the Pi's
 CPU temperature, frequency, voltage, and throttling information.
-This script needs to be installed to `/opt/pigio/cgi` by:
+This script needs to be installed to `/opt/pigpio/cgi` by:
 ```
 $ sudo sh -c 'cat > /opt/pigpio/cgi/getState' <<'+++'
 #!/bin/bash
