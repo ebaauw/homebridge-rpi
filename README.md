@@ -65,7 +65,8 @@ This daemon is part of the [`pigpio`](https://github.com/joan2937/pigpio)
 library, which is included in Raspbian.
 While this daemon comes with Raspbian, it needs to be enabled and
 configured for use by Homebridge RPi, see [**Installation**](#installation).  
-<br>If you run Homebridge in a container on the Raspberry Pi, let
+
+If you run Homebridge in a container on the Raspberry Pi, let
 Homebridge RPi connect remotely to (the `pigpiod` daemon running on) the host.
 Do _not_ try to run `pigpiod` in the container.
 
@@ -98,7 +99,9 @@ To install Homebridge RPi:
 - Edit `config.json` and add the `RPi` platform provided by Homebridge RPi, see [**Homebridge Configuration**](#homebridge-configuration);
 - If you want to expose devices connected to the GPIO pins on the local
 Raspberry Pi, enable the `pigpiod` daemon,
-see [**Local Raspberry Pi Configuration**](#local-raspberry-pi-configuration);
+see [**Local Raspberry Pi Configuration**](#local-raspberry-pi-configuration).
+Note that if you run Homebridge in a container,
+you need to setup the host as remote Raspberry Pi;
 - If you want to expose (devices connected to the GPIO pins on) a remote
 Raspberry Pi, enable and configure the `pigpiod` daemon on each remote
 Raspberry Pi,
