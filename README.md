@@ -397,7 +397,7 @@ $ pigs shell getState
 0
 ```
 The return status `0` indicates success.
-This should have created an output file in `/opt/pigpio`:
+This should have created an output file in `/tmp`:
 ```
 $ ls -l /tmp/getState.json
 -rw-r--r-- 1 root root 256 May  9 23:45 /tmp/getState.json
