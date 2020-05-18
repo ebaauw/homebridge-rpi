@@ -196,7 +196,9 @@ which can also be specified individually:
 See the [WiKi](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices)
 for details about supported devices and the configuration options per device.
 Note the the GPIO pins are specified by Broadcom (or BCM) number,
-not by physical pin number, see [pinout.xyz](https://pinout.xyz).
+not by physical pin number, see the Raspberry Pi
+[documentation](https://www.raspberrypi.org/documentation/usage/gpio/)
+or [pinout.xyz](https://pinout.xyz).
 
 #### Remote Raspberry Pi
 To expose one or more remote Raspberry Pi computers, specify multiple entries in
