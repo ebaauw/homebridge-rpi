@@ -98,7 +98,7 @@
                     "description": "Time in ms to turn off the switch automatically (for: Switch).",
                     "type": "integer",
                     "minimum": 20,
-                    "maximum": 1000
+                    "maximum": 5000
                   },
                   "gpioClock": {
                      "title": "GPIO Clock",
