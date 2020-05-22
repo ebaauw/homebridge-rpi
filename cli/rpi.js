@@ -171,10 +171,11 @@ class Main extends homebridgeLib.CommandLineTool {
 
     let info
     let state
+    let rpiInfo = new RpiInfo()
     if (this._clargs.options.host == null) {
-      info = await RpiInfo.getCpuInfo()
+      info = await rpiInfo.getCpuInfo()
       try {
-        state = await RpiInfo.getState()
+        state = await rpiInfo.getState()
       } catch (error) {
         // this.error(error)
         this.error(error.message.slice(0, error.message.length - 1)) // FIXME
@@ -183,10 +184,10 @@ class Main extends homebridgeLib.CommandLineTool {
     } else {
       try {
         const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
-        info = RpiInfo.parseCpuInfo(cpuInfo)
+        info = rpiInfo.parseCpuInfo(cpuInfo)
         await this.pi.shell('getState')
         const text = await this.pi.readFile('/tmp/getState.json')
-        state = RpiInfo.parseState(text)
+        state = rpiInfo.parseState(text)
       } catch (error) {
         this.error(error)
         return
