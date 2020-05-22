@@ -172,9 +172,10 @@ class Main extends homebridgeLib.CommandLineTool {
     let info
     let state
     if (this._clargs.options.host == null) {
-      info = await RpiInfo.getCpuInfo()
+      const rpiInfo = new RpiInfo()
+      info = await rpiInfo.getCpuInfo()
       try {
-        state = await RpiInfo.getState()
+        state = await rpiInfo.getState()
       } catch (error) {
         // this.error(error)
         this.error(error.message.slice(0, error.message.length - 1)) // FIXME
