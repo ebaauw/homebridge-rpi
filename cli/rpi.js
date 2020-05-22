@@ -173,6 +173,12 @@ class Main extends homebridgeLib.CommandLineTool {
     let state
     if (this._clargs.options.host == null) {
       const rpiInfo = new RpiInfo()
+      rpiInfo.on('readFile', (fileName) => {
+        this.debug('read file %s', fileName)
+      })
+      rpiInfo.on('exec', (cmd, args) => {
+        this.debug('exec %s %s', cmd, args.join(' '))
+      })
       info = await rpiInfo.getCpuInfo()
       try {
         state = await rpiInfo.getState()
