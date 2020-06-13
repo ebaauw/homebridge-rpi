@@ -74,6 +74,10 @@
                       {
                         "title": "Switch",
                         "enum": [ "switch" ]
+                      },
+                      {
+                        "title": "Valve",
+                        "enum": [ "valve" ]
                       }
                     ]
                   },
@@ -128,7 +132,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "servo", "switch"] }
+                          "device": { "enum": ["button", "contact", "servo", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -141,7 +145,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "servo", "switch"] }
+                          "device": { "enum": ["button", "contact", "servo", "switch", "valve"] }
                         }
                       },
                       {
@@ -158,7 +162,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "switch"] }
+                          "device": { "enum": ["button", "contact", "switch", "valve"] }
                         }
                       },
                       {
