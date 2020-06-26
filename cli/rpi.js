@@ -99,6 +99,10 @@ Parameters:
   Print this help and exit.`
 }
 
+function toHex (n) {
+  return '0x' + ('00000000' + n.toString(16).toUpperCase()).slice(-8)
+}
+
 class Main extends homebridgeLib.CommandLineTool {
   constructor () {
     super()
@@ -191,9 +195,12 @@ class Main extends homebridgeLib.CommandLineTool {
       try {
         const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
         info = RpiInfo.parseCpuInfo(cpuInfo)
+        info.gpioMask = toHex(info.gpioMask)
+        info.gpioMaskSerial = toHex(info.gpioMaskSerial)
         await this.pi.shell('getState')
         const text = await this.pi.readFile('/tmp/getState.json')
         state = RpiInfo.parseState(text)
+        state.throttled = toHex(state.throttled)
       } catch (error) {
         this.error(error)
         return
