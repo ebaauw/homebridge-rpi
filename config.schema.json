@@ -68,6 +68,10 @@
                         "enum": [ "fanshim" ]
                       },
                       {
+                        "title": "Light",
+                        "enum": [ "light" ]
+                      },
+                      {
                         "title": "Servo Motor",
                         "enum": [ "servo" ]
                       },
@@ -88,7 +92,7 @@
                   },
                   "gpio": {
                      "title": "GPIO",
-                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Servo Motor, Switch).",
+                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Light, Servo Motor, Switch).",
                      "type": "integer",
                      "maximum": 31
                   },
@@ -132,7 +136,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "servo", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "servo", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -145,7 +149,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "servo", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "servo", "switch", "valve"] }
                         }
                       },
                       {
