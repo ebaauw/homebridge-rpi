@@ -46,8 +46,6 @@ Note that this plugin is still under development.
 Todo:
 - Configurable timeout settings for debouncing input,
 button double press and long press;
-- More robust handling of connection errors to missing RPis;
-- Support PWM devices (e.g. dimmable LEDs);
 - Support NeoPixel LEDs.
 
 Sometimes, Homebridge RPi doesn't properly close the `pigpiod` file
