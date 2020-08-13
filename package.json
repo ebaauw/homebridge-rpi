@@ -19,10 +19,10 @@
   },
   "engines": {
     "homebridge": "^1.1.0",
-    "node": "^12.18.2"
+    "node": "^12.18.3"
   },
   "dependencies": {
-    "homebridge-lib": "^4.7.13"
+    "homebridge-lib": "^4.7.14"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
@@ -35,5 +35,9 @@
   "bugs": {
     "url": "https://github.com/ebaauw/homebridge-rpi/issues"
   },
-  "homepage": "https://github.com/ebaauw/homebridge-rpi#readme"
+  "homepage": "https://github.com/ebaauw/homebridge-rpi#readme",
+  "funding": {
+    "type": "paypal",
+    "url": "https://www.paypal.me/ebaauw/EUR"
+  }
 }
