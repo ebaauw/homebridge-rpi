@@ -81,6 +81,10 @@
                         "enum": [ "servo" ]
                       },
                       {
+                        "title": "Smoke Sensor",
+                        "enum": [ "smoke" ]
+                      },
+                      {
                         "title": "Switch",
                         "enum": [ "switch" ]
                       },
@@ -141,7 +145,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "servo", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "servo", "smoke", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -154,7 +158,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "servo", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "servo", "smoke", "switch", "valve"] }
                         }
                       },
                       {
@@ -171,7 +175,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "smoke", "switch", "valve"] }
                         }
                       },
                       {
