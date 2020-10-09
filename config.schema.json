@@ -77,6 +77,10 @@
                         "enum": [ "light" ]
                       },
                       {
+                        "title": "Motion Sensor",
+                        "enum": [ "motion" ]
+                      },
+                      {
                         "title": "Servo Motor",
                         "enum": [ "servo" ]
                       },
@@ -145,7 +149,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "motion", "servo", "smoke", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -158,7 +162,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "motion", "servo", "smoke", "switch", "valve"] }
                         }
                       },
                       {
@@ -175,7 +179,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "motion", "smoke", "switch", "valve"] }
                         }
                       },
                       {
