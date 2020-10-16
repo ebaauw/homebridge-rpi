@@ -179,7 +179,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "motion", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "light", "motion", "smoke", "switch", "valve"] }
                         }
                       },
                       {
