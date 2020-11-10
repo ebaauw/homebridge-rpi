@@ -358,7 +358,7 @@ substituting `xx.xx.xx.xx` with the IP address of the Raspberry Pi running
 #### Install `getState` Script
 `pigpio` provides a hook to execute a shell command remotely.
 Homebridge RPi uses this hook to run a little shell script,
-[`getState`](./opt/pigpio/cgi/geeState), that calls `date`, `uptime`, and
+[`getState`](./opt/pigpio/cgi/getState), that calls `date`, `uptime`, and
 `vcgencmd` to get the Pi's date, uptime, system load, and the Pi's
 CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigpio/cgi` by:
