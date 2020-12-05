@@ -146,7 +146,7 @@ class Main extends homebridgeLib.CommandLineTool {
     parser.flag('D', 'debug', () => { this.setOptions({ debug: true }) })
     parser.version('V', 'version')
     parser.option('H', 'host', (value) => {
-      homebridgeLib.OptionParser.toHost('host', value, true)
+      homebridgeLib.OptionParser.toHost('host', value, false, true)
       clargs.options.host = value
     })
     parser.parameter('command', (value) => {
