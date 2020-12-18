@@ -195,17 +195,17 @@ class Main extends homebridgeLib.CommandLineTool {
       try {
         const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
         info = RpiInfo.parseCpuInfo(cpuInfo)
-        info.gpioMask = toHex(info.gpioMask)
-        info.gpioMaskSerial = toHex(info.gpioMaskSerial)
         await this.pi.shell('getState')
         const text = await this.pi.readFile('/tmp/getState.json')
         state = RpiInfo.parseState(text)
-        state.throttled = toHex(state.throttled)
       } catch (error) {
         this.error(error)
         return
       }
     }
+    info.gpioMask = toHex(info.gpioMask)
+    info.gpioMaskSerial = toHex(info.gpioMaskSerial)
+    state.throttled = toHex(state.throttled)
     const json = jsonFormatter.stringify(Object.assign(info, state))
     this.print(json)
   }
