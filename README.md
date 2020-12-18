@@ -274,15 +274,16 @@ $ rpi info
   "model": "3B",
   "processor": "BCM2837",
   "revision": "1.2",
-  "gpioMask": 268435452,
-  "gpioMaskSerial": 49152,
-  "date": "2020-05-09T20:50:55.000Z",
-  "boot": "2020-04-12T14:35:04.000Z",
-  "load": 0.36,
-  "temp": 63.4,
-  "freq": 1200000000,
-  "volt": 1.3375,
-  "throttled": 131072
+  "gpioMask": "0x0FFFFFFC",
+  "gpioMaskSerial": "0x0000C000",
+  "date": "2020-12-18T12:13:05.000Z",
+  "boot": "2020-12-06T15:22:12.000Z",
+  "powerLed": 255,
+  "load": 0.04,
+  "temp": 56.4,
+  "freq": 600000000,
+  "volt": 1.2,
+  "throttled": "0x00000000"
 }
 ```
 If the user isn't a member of the `video` group, you will get an error message:
@@ -358,9 +359,9 @@ substituting `xx.xx.xx.xx` with the IP address of the Raspberry Pi running
 #### Install `getState` Script
 `pigpio` provides a hook to execute a shell command remotely.
 Homebridge RPi uses this hook to run a little shell script,
-[`getState`](./opt/pigpio/cgi/getState), that calls `date`, `uptime`, and
-`vcgencmd` to get the Pi's date, uptime, system load, and the Pi's
-CPU temperature, frequency, voltage, and throttling information.
+[`getState`](./opt/pigpio/cgi/getState), that calls `date`, `uptime`, `cat` and
+`vcgencmd` to get the Pi's date, uptime, system load, power LED state,
+and the Pi's CPU temperature, frequency, voltage, and throttling information.
 This script needs to be installed to `/opt/pigpio/cgi` by:
 ```
 $ sudo sh -c 'cat > /opt/pigpio/cgi/getState' <<'+++'
@@ -378,6 +379,7 @@ cat - <<+
 {\
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
+"powerLed": "$(cat /sys/class/leds/led1/brightness)",\
 "load":"$(uptime)",\
 "temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\
@@ -400,19 +402,20 @@ The return status `0` indicates success.
 This should have created an output file in `/tmp`:
 ```
 $ ls -l /tmp/getState.json
--rw-r--r-- 1 root root 256 May  9 23:45 /tmp/getState.json
+-rw-r--r-- 1 root root 269 Dec 18 13:11 /tmp/getState.json
 ```
 The `.json` file contains the script's output in JSON:
 ```
 $ json /tmp/getState.json
 {
-  "date": "2020-05-09T21:45:52+00:00",
-  "boot": "2020-04-12 16:35:04",
-  "load": " 23:45:52 up 27 days,  7:10,  3 users,  load average: 0.24, 0.17, 0.17",
-  "temp": "temp=61.8'C",
+  "date": "2020-12-18T12:11:39+00:00",
+  "boot": "2020-12-06 16:22:12",
+  "powerLed": "255",
+  "load": " 13:11:39 up 11 days, 20:49,  2 users,  load average: 0.18, 0.11, 0.07",
+  "temp": "temp=56.4'C",
   "freq": "frequency(45)=600000000",
   "volt": "volt=1.2000V",
-  "throttled": "throttled=0x20000"
+  "throttled": "throttled=0x0"
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
@@ -420,12 +423,14 @@ Note that `date` is in UTC, but `boot` is in local time.
 #### File Access
 `pigpio` provides a hook to access files remotely.
 Homebridge RPi uses this hook to get the Raspberry Pi's serial number from
-`/proc/cpuinfo` and to get the output from the `getState` script.
+`/proc/cpuinfo`, to get the output from the `getState` script, and to set the
+state of the power LED through `/sys/class/leds/led1/brightness`.
 These files need to be whitelisted, in `/opt/pigpio/access`:
 ```
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
+/sys/class/leds/led1/brightness w
 +
 ```
 To check that the files can be read, issue `fo` to open the file for reading:
@@ -438,7 +443,7 @@ Note the returned file descriptor, in this case `0`.
 Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
 ```
 $ pigs -a fr 0 1024
-255 {"date":"2020-05-09T21:47:22+00:00","boot": "2020-04-12 16:35:04","load":" 23:47:22 up 27 days,  7:12,  3 users,  load average: 0.08, 0.13, 0.16","temp":"temp=62.3'C","freq":"frequency(45)=600000000","volt":"volt=1.2000V","throttled":"throttled=0x20000"}
+269 {"date":"2020-12-18T12:16:20+00:00","boot": "2020-12-06 16:22:12","powerLed": "255","load":" 13:16:20 up 11 days, 20:54,  2 users,  load average: 0.06, 0.08, 0.07","temp":"temp=55.8'C","freq":"frequency(45)=600000000","volt":"volt=1.2000V","throttled":"throttled=0x0"}
 ```
 Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
@@ -452,21 +457,22 @@ This should return the Pi's status (serial number redacted):
 ```
 $ rpi -H pi4 info
 {
-  "id": "00000000xxxxxxxx",
+  "id": "0000000069265134",
   "manufacturer": "Sony UK",
   "memory": "1GB",
   "model": "3B",
   "processor": "BCM2837",
   "revision": "1.2",
-  "gpioMask": 268435452,
-  "gpioMaskSerial": 49152,
-  "date": "2020-05-09T21:49:57.000Z",
-  "boot": "2020-04-12T14:35:04.000Z",
-  "load": 0.27,
-  "temp": 63.4,
-  "freq": 1200000000,
-  "volt": 1.3375,
-  "throttled": 131072
+  "gpioMask": "0x0FFFFFFC",
+  "gpioMaskSerial": "0x0000C000",
+  "date": "2020-12-18T12:19:16.000Z",
+  "boot": "2020-12-06T15:22:12.000Z",
+  "powerLed": 255,
+  "load": 0.11,
+  "temp": 56.4,
+  "freq": 600000000,
+  "volt": 1.2,
+  "throttled": "0x00000000"
 }
 ```
 
