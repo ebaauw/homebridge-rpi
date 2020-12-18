@@ -1,2 +1,3 @@
 /proc/cpuinfo r
 /tmp/getState.json r
+/sys/class/leds/led1/brightness w
