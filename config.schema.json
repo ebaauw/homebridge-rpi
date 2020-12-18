@@ -37,6 +37,11 @@
               "description": "Do not expose a service for the Raspberry Pi itself.",
               "type": "boolean"
             },
+            "noPowerLed": {
+              "title": "No Power LED",
+              "description": "Do not expose a Lightbulb service for the Raspberry Pi power LED.",
+              "type": "boolean"
+            },
             "noSmokeSensor": {
               "title": "No Smoke Sensor",
               "description": "Do not expose a Smoke Sensor service for the Raspberry Pi itself.",
