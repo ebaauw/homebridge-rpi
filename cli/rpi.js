@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // homebridge-rpi/cli/rpi.js
-// Copyright © 2019-2020 Erik Baauw.  All rights reserved.
+// Copyright © 2019-2021 Erik Baauw.  All rights reserved.
 //
 // Homebridge plugin for Raspberry Pi.
 
@@ -24,14 +24,16 @@ const usage = {
   rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
   info: `${b('info')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
-  closeHandles: `${b('closeHandles')} [${b('-h')}]`
+  closeHandles: `${b('closeHandles')} [${b('-h')}]`,
+  led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`
 }
 
 const description = {
   rpi: 'Command line interface to Raspberry Pi.',
   info: 'Get Raspberry Pi properties and state.',
   test: 'Repeated get Raspberry Pi properties and state.',
-  closeHandles: 'Force-close stale pigpiod handles.'
+  closeHandles: 'Force-close stale pigpiod handles.',
+  led: 'Get/set/clear power LED state.'
 }
 
 const help = {
@@ -62,6 +64,9 @@ Commands:
 
   ${usage.closeHandles}
   ${description.closeHandles}
+
+  ${usage.led}
+  ${description.led}
 
 For more help, issue: ${b('rpi')} ${u('command')} ${b('-h')}`,
   info: `${description.info}
@@ -96,7 +101,20 @@ Usage: ${b('rpi')} ${usage.closeHandles}
 
 Parameters:
   ${b('-h')}, ${b('--help')}
-  Print this help and exit.`
+  Print this help and exit.`,
+  led: `${description.led}
+
+Usage: ${b('rpi')} ${usage.led}
+
+Parameters:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.
+
+  ${b('on')}
+  Turn power LED on.
+
+  ${b('off')}
+  Turn power LED off.`
 }
 
 function toHex (n) {
@@ -113,25 +131,32 @@ class Main extends homebridgeLib.CommandLineTool {
     try {
       this._clargs = this.parseArguments()
       this.pi = new PigpioClient(this._clargs.options)
-      this.pi.on('error', (error) => { this.warn(error) })
-      this.pi.on('connect', (hostname, port) => {
-        this.debug('connected to pigpio at %s:%d', hostname, port)
-      })
-      this.pi.on('disconnect', (hostname, port) => {
-        this.debug('disconnected from pigpio at %s:%d', hostname, port)
-      })
-      this.pi.on('command', (cmd, p1, p2, p3) => {
-        this.debug('command %s %d %d %j', PigpioClient.commandName(cmd), p1, p2, p3)
-      })
-      this.pi.on('response', (cmd, status, result) => {
-        this.debug('command %s => %d', PigpioClient.commandName(cmd), status)
-        // this.debug('command %s => %d %j', PigpioClient.commandName(cmd), status, result)
-      })
+      this.pi
+        .on('error', (error) => { this.warn(error) })
+        .on('connect', (hostname, port) => {
+          this.debug('connected to pigpio at %s:%d', hostname, port)
+        })
+        .on('disconnect', (hostname, port) => {
+          this.debug('disconnected from pigpio at %s:%d', hostname, port)
+        })
+        .on('command', (cmd, p1, p2, p3) => {
+          this.debug('command %s %d %d %j', PigpioClient.commandName(cmd), p1, p2, p3)
+        })
+        .on('response', (cmd, status, result) => {
+          this.debug('command %s => %d', PigpioClient.commandName(cmd), status)
+          // this.debug('command %s => %d %j', PigpioClient.commandName(cmd), status, result)
+        })
       this.name = 'rpi ' + this._clargs.command
       this.usage = `${b('rpi')} ${usage[this._clargs.command]}`
       this.help = help[this._clargs.command]
       await this[this._clargs.command](this._clargs.args)
-      await this.pi.disconnect()
+    } catch (error) {
+      this.error(error)
+    }
+    try {
+      if (this.pi != null) {
+        await this.pi.disconnect()
+      }
     } catch (error) {
       this.error(error)
     }
@@ -142,47 +167,37 @@ class Main extends homebridgeLib.CommandLineTool {
     const clargs = {
       options: {}
     }
-    parser.help('h', 'help', help.rpi)
-    parser.flag('D', 'debug', () => { this.setOptions({ debug: true }) })
-    parser.version('V', 'version')
-    parser.option('H', 'host', (value) => {
-      homebridgeLib.OptionParser.toHost('host', value, false, true)
-      clargs.options.host = value
-    })
-    parser.parameter('command', (value) => {
-      if (usage[value] == null || typeof this[value] !== 'function') {
-        throw new UsageError(`${value}: unknown command`)
-      }
-      clargs.command = value
-    })
-    parser.remaining((list) => { clargs.args = list })
-    parser.parse()
+    parser
+      .help('h', 'help', help.rpi)
+      .flag('D', 'debug', () => { this.setOptions({ debug: true, chalk: true }) })
+      .version('V', 'version')
+      .option('H', 'host', (value) => {
+        homebridgeLib.OptionParser.toHost('host', value, false, true)
+        clargs.options.host = value
+      })
+      .parameter('command', (value) => {
+        if (usage[value] == null || typeof this[value] !== 'function') {
+          throw new UsageError(`${value}: unknown command`)
+        }
+        clargs.command = value
+      })
+      .remaining((list) => { clargs.args = list })
+      .parse()
     return clargs
   }
 
-  async info (...args) {
-    const parser = new homebridgeLib.CommandLineParser(packageJson)
-    const clargs = { options: {} }
-    parser.help('h', 'help', this.help)
-    parser.flag('n', 'noWhiteSpace', () => {
-      clargs.options.noWhiteSpace = true
-    })
-    parser.flag('s', 'sortKeys', () => {
-      clargs.options.sortKeys = true
-    })
-    parser.parse(...args)
-    const jsonFormatter = new homebridgeLib.JsonFormatter(clargs.options)
-
+  async _getInfo () {
     let info
     let state
     if (this._clargs.options.host == null) {
       const rpiInfo = new RpiInfo()
-      rpiInfo.on('readFile', (fileName) => {
-        this.debug('read file %s', fileName)
-      })
-      rpiInfo.on('exec', (cmd, args) => {
-        this.debug('exec %s %s', cmd, args.join(' '))
-      })
+      rpiInfo
+        .on('readFile', (fileName) => {
+          this.debug('read file %s', fileName)
+        })
+        .on('exec', (cmd, args) => {
+          this.debug('exec %s %s', cmd, args.join(' '))
+        })
       info = await rpiInfo.getCpuInfo()
       try {
         state = await rpiInfo.getState()
@@ -206,11 +221,44 @@ class Main extends homebridgeLib.CommandLineTool {
     info.gpioMask = toHex(info.gpioMask)
     info.gpioMaskSerial = toHex(info.gpioMaskSerial)
     state.throttled = toHex(state.throttled)
-    const json = jsonFormatter.stringify(Object.assign(info, state))
+    return Object.assign(info, state)
+  }
+
+  async info (...args) {
+    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    const clargs = { options: {} }
+    parser
+      .help('h', 'help', this.help)
+      .flag('n', 'noWhiteSpace', () => {
+        clargs.options.noWhiteSpace = true
+      })
+      .flag('s', 'sortKeys', () => {
+        clargs.options.sortKeys = true
+      })
+      .parse(...args)
+    const jsonFormatter = new homebridgeLib.JsonFormatter(clargs.options)
+
+    const info = await this._getInfo(this._clargs.options.host)
+    const json = jsonFormatter.stringify(info)
     this.print(json)
   }
 
+  async exit (signal) {
+    this.log('got %s - exiting...', signal)
+    try {
+      if (this.pi != null) {
+        await this.pi.disconnect()
+      }
+    } catch (error) {
+      this.error(error)
+    }
+    process.exit(0)
+  }
+
   async test (...args) {
+    process
+      .on('SIGINT', () => { this.exit('SIGINT') })
+      .on('SIGTERM', () => { this.exit('SIGTERM') })
     for (;;) {
       try {
         await this.info(...args)
@@ -223,8 +271,9 @@ class Main extends homebridgeLib.CommandLineTool {
 
   async closeHandles (...args) {
     const parser = new homebridgeLib.CommandLineParser(packageJson)
-    parser.help('h', 'help', this.help)
-    parser.parse(...args)
+    parser
+      .help('h', 'help', this.help)
+      .parse(...args)
     await this.pi.connect()
     let nClosed = 0
     for (let handle = 0; handle <= 15; handle++) {
@@ -239,6 +288,40 @@ class Main extends homebridgeLib.CommandLineTool {
       }
     }
     this.debug('%s: closed %d handles', this.pi.hostname, nClosed)
+  }
+
+  async led (...args) {
+    const clargs = { options: {} }
+    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    parser
+      .help('h', 'help', this.help)
+      // .parameter('state', (value) => {
+      //   if (value !== 'on' && value !== 'off') {
+      //     throw new UsageError(`${value}: unknown state`)
+      //   }
+      //   clargs.options.on = value === 'on'
+      // }, true)
+      .remaining((value) => {
+        if (value.length > 1) {
+          throw new UsageError('too many parameters')
+        }
+        if (value.length === 1) {
+          if (value[0] !== 'on' && value[0] !== 'off') {
+            throw new UsageError(`${value[0]}: unknown state`)
+          }
+          clargs.options.on = value[0] === 'on'
+        }
+      })
+      .parse(...args)
+    const info = await this._getInfo(this._clargs.options.host)
+    if (RpiInfo.noPowerLed(info.model)) {
+      throw new Error(`${this._clargs.options.host}: Raspberry Pi ${info.model}: no power LED support`)
+    }
+    if (clargs.options.on != null) {
+      await this.pi.writeFile(RpiInfo.powerLed, clargs.options.on ? '1' : '0')
+    }
+    const { powerLed } = await this._getInfo(this._clargs.options.host)
+    this.print(powerLed ? 'on' : 'off')
   }
 }
 
