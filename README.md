@@ -16,7 +16,7 @@
 </span>
 
 ## Homebridge plugin for Raspberry Pi
-Copyright © 2019-2020 Erik Baauw. All rights reserved.
+Copyright © 2019-2021 Erik Baauw. All rights reserved.
 
 This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to HomeKit
 Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
@@ -367,7 +367,7 @@ This script needs to be installed to `/opt/pigpio/cgi` by:
 $ sudo sh -c 'cat > /opt/pigpio/cgi/getState' <<'+++'
 #!/bin/bash
 # homebridge-rpi/opt/pigpio/cgi/getState
-# Copyright © 2019-2020 Erik Baauw.  All rights reserved.
+# Copyright © 2019-2021 Erik Baauw.  All rights reserved.
 #
 # Homebridge plugin for Raspberry Pi.
 
