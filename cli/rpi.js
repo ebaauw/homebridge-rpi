@@ -7,7 +7,6 @@
 
 'use strict'
 
-const chalk = require('chalk')
 const homebridgeLib = require('homebridge-lib')
 const PigpioClient = require('../lib/PigpioClient')
 const RpiInfo = require('../lib/RpiInfo')
@@ -15,10 +14,8 @@ const packageJson = require('../package.json')
 
 const PI_CMD = PigpioClient.commands
 
-const b = chalk.bold
-const u = chalk.underline
-
-class UsageError extends Error {}
+const { b, u } = homebridgeLib.CommandLineTool
+const { UsageError } = homebridgeLib.CommandLineParser
 
 const usage = {
   rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
@@ -256,9 +253,6 @@ class Main extends homebridgeLib.CommandLineTool {
   }
 
   async test (...args) {
-    process
-      .on('SIGINT', () => { this.exit('SIGINT') })
-      .on('SIGTERM', () => { this.exit('SIGTERM') })
     for (;;) {
       try {
         await this.info(...args)
