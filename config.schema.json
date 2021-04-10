@@ -74,8 +74,16 @@
                         "enum": [ "contact" ]
                       },
                       {
+                        "title": "Door Bell",
+                        "enum": [ "doorbell" ]
+                      },
+                      {
                         "title": "Fan SHIM",
                         "enum": [ "fanshim" ]
+                      },
+                      {
+                        "title": "Leak Sensor",
+                        "enum": [ "leak" ]
                       },
                       {
                         "title": "Light",
@@ -110,13 +118,13 @@
                   },
                   "gpio": {
                      "title": "GPIO",
-                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Light, Servo Motor, Switch).",
+                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Door Bell, Leak Sensor, Light, Servo Motor, Smoke Sensor, Switch).",
                      "type": "integer",
                      "maximum": 31
                   },
                   "reversed": {
                     "title": "Reversed",
-                    "description": "The device state is reversed (for: Button, Contact Sensor, Switch).",
+                    "description": "The device state is reversed (for: Button, Contact Sensor, Door Bell, Leak Sensor, Smoke Sensor, Switch).",
                     "type": "boolean"
                   },
                   "pulse": {
@@ -154,7 +162,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "servo", "smoke", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -167,7 +175,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "servo", "smoke", "switch", "valve"] }
                         }
                       },
                       {
@@ -184,7 +192,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "light", "motion", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "smoke", "switch", "valve"] }
                         }
                       },
                       {
