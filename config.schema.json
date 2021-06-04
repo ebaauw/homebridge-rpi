@@ -310,7 +310,14 @@
               }
             }
           }
-        }
+       }
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Timeout in seconds.  Default: 15.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60
       }
     }
   }
