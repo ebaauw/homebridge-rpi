@@ -133,7 +133,7 @@ The default configuration can also be specified explicitly:
     "platform": "RPi",
     "hosts": [
       {
-        "host": "localhost"
+        "host": "127.0.0.1"
       }
     ]
   }
@@ -149,7 +149,7 @@ To expose devices connected to a GPIO pin, specify a `devices` array for the hos
     "platform": "RPi",
     "hosts": [
       {
-        "host": "localhost",
+        "host": "127.0.0.1",
         "devices": [
           {
             "device": "fanshim"
@@ -313,6 +313,12 @@ $ pigs hwver
 10494163
 ```
 This returns the Pi's hardware revision (in decimal).
+
+Unless you specify the local RPi as `127.0.0.1` in config.json,
+`pigpiod` might see the incoming connection as a remote connection,
+even though it originates from the local host.
+In this case, Homebridge RPi will report an ECONNREFUSED error trying to connect to `pigpiod`.
+To prevent this error, configure `pigpiod` to accept remote connections, see below.
 
 ### Remote Raspberry Pi Configuration
 Note that you need to execute the following steps on each of the remote
