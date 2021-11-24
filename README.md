@@ -22,16 +22,18 @@ This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to Ho
 Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
 It provides the following features:
 - Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
-- Monitoring and controlling from HomeKit of input devices connected to the Pi's GPIO pins:
+- Monitoring and controlling from HomeKit of input devices connected to the Pi's GPIO pins, including:
   - Buttons;
   - Contact sensors (incl. Eve history);
-- Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins:
+- Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins, including:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
   - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
 _Target Tilt Angle_;
 - Monitoring and controlling from HomeKit of multi-coloured LEDs of a Pimoroni
 [Blinkt!](https://shop.pimoroni.com/products/blinkt) or
 [Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi.
+
+See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) for an overview of supported devices.
 
 Unlike most other Raspberry Pi plugins, Homebridge RPi runs on any regular
 Homebridge setup, connecting to the Pi's `pigpiod` daemon over the network.
