@@ -90,6 +90,10 @@
                         "enum": [ "light" ]
                       },
                       {
+                        "title": "Lock",
+                        "enum": [ "lock" ]
+                      },
+                      {
                         "title": "Motion Sensor",
                         "enum": [ "motion" ]
                       },
@@ -181,7 +185,7 @@
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"] }
                         },
                         "required": ["gpio"]
                       }
@@ -194,7 +198,7 @@
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"] }
                         }
                       },
                       {
@@ -228,7 +232,7 @@
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "motion", "smoke", "switch", "valve"] }
+                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "smoke", "switch", "valve"] }
                         }
                       },
                       {
