@@ -47,6 +47,11 @@
               "description": "Do not expose a Smoke Sensor service for the Raspberry Pi itself.",
               "type": "boolean"
             },
+            "usbPower": {
+              "title": "USB Power",
+              "description": "Expose an Outlet to control power to the USB ports.<br>See the [Wiki]().",
+              "type": "boolean"
+            },
             "devices": {
               "title": "Devices",
               "notitle": true,
