@@ -157,7 +157,7 @@
                   },
                   "pulse": {
                     "title": "Pulse",
-                    "description": "Time in ms to turn off the switch automatically (for: Switch).",
+                    "description": "Time in ms to turn off the switch automatically (for: Lock, Switch).",
                     "type": "integer",
                     "minimum": 20,
                     "maximum": 5000
@@ -305,7 +305,7 @@
                           "pulse": {}
                         },
                         "properties": {
-                          "device": { "const": "switch" }
+                          "device": { "enum": ["lock", "switch"] }
                         }
                       },
                       {
