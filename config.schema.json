@@ -157,7 +157,7 @@
                   },
                   "pulse": {
                     "title": "Pulse",
-                    "description": "Time in ms to turn off the switch automatically (for: Lock, Switch).",
+                    "description": "Time in ms to lock the lock or turn off the switch automatically (for: Lock, Switch).",
                     "type": "integer",
                     "minimum": 20,
                     "maximum": 5000
