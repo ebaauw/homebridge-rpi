@@ -39,7 +39,7 @@
             },
             "noPowerLed": {
               "title": "No Power LED",
-              "description": "Do not expose a Light service for the Raspberry Pi power LED.",
+              "description": "Do not expose a Lightbulb service for the Raspberry Pi power LED.",
               "type": "boolean"
             },
             "noSmokeSensor": {
@@ -49,7 +49,7 @@
             },
             "usbPower": {
               "title": "USB Power",
-              "description": "Expose an Outlet to control power to the USB ports.<br><i>Note:</i> Pi models B+, 2B, 3B, and 3B+ only. See the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
+              "description": "Expose an Outlet service to control power to the USB ports (only for Raspberry Pi models with four USB 2.0 ports: B+, 2B, 3B, and 3B+).<br>You need to configure pigpiod as well, see the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
               "type": "boolean"
             },
             "devices": {
