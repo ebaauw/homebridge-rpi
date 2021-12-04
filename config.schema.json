@@ -65,57 +65,84 @@
                     "description": "The type of the device.",
                     "type": "string",
                     "required": true,
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Blinkt",
-                        "enum": ["blinkt"]
+                        "enum": [
+                          "blinkt"
+                        ]
                       },
                       {
                         "title": "Button",
-                        "enum": ["button"]
+                        "enum": [
+                          "button"
+                        ]
                       },
                       {
                         "title": "Contact Sensor",
-                        "enum": ["contact"]
+                        "enum": [
+                          "contact"
+                        ]
                       },
                       {
                         "title": "Door Bell",
-                        "enum": ["doorbell"]
+                        "enum": [
+                          "doorbell"
+                        ]
                       },
                       {
                         "title": "Fan SHIM",
-                        "enum": ["fanshim"]
+                        "enum": [
+                          "fanshim"
+                        ]
                       },
                       {
                         "title": "Leak Sensor",
-                        "enum": ["leak"]
+                        "enum": [
+                          "leak"
+                        ]
                       },
                       {
                         "title": "Light",
-                        "enum": ["light"]
+                        "enum": [
+                          "light"
+                        ]
                       },
                       {
                         "title": "Lock",
-                        "enum": ["lock"]
+                        "enum": [
+                          "lock"
+                        ]
                       },
                       {
                         "title": "Motion Sensor",
-                        "enum": ["motion"]
+                        "enum": [
+                          "motion"
+                        ]
                       },
                       {
                         "title": "Servo Motor",
-                        "enum": ["servo"]
+                        "enum": [
+                          "servo"
+                        ]
                       },
                       {
                         "title": "Smoke Sensor",
-                        "enum": ["smoke"]
+                        "enum": [
+                          "smoke"
+                        ]
                       },
                       {
                         "title": "Switch",
-                        "enum": ["switch"]
+                        "enum": [
+                          "switch"
+                        ]
                       },
                       {
                         "title": "Valve",
-                        "enum": ["valve"]
+                        "enum": [
+                          "valve"
+                        ]
                       }
                     ]
                   },
@@ -134,17 +161,24 @@
                     "title": "Pull-up/pull-down resistor",
                     "description": "The configuration of the internal pull-up/pull-down resistor (for: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor).",
                     "type": "string",
-                    "oneOf": [{
+                    "oneOf": [
+                      {
                         "title": "Off",
-                        "enum": ["off"]
+                        "enum": [
+                          "off"
+                        ]
                       },
                       {
                         "title": "Pull-down",
-                        "enum": ["down"]
+                        "enum": [
+                          "down"
+                        ]
                       },
                       {
                         "title": "Pull-up",
-                        "enum": ["up"]
+                        "enum": [
+                          "up"
+                        ]
                       }
                     ]
                   },
@@ -178,32 +212,61 @@
                     "type": "integer"
                   }
                 },
-                "allOf": [{
-                    "oneOf": [{
+                "allOf": [
+                  {
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
-                            "enum": ["blinkt", "fanshim"]
+                            "enum": [
+                              "blinkt",
+                              "fanshim"
+                            ]
                           }
                         }
                       },
                       {
                         "properties": {
                           "device": {
-                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"]
+                            "enum": [
+                              "button",
+                              "contact",
+                              "doorbell",
+                              "leak",
+                              "light",
+                              "lock",
+                              "motion",
+                              "servo",
+                              "smoke",
+                              "switch",
+                              "valve"
+                            ]
                           }
                         },
-                        "required": ["gpio"]
+                        "required": [
+                          "gpio"
+                        ]
                       }
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "gpio": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
-                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"]
+                            "enum": [
+                              "button",
+                              "contact",
+                              "doorbell",
+                              "leak",
+                              "light",
+                              "lock",
+                              "motion",
+                              "servo",
+                              "smoke",
+                              "switch",
+                              "valve"
+                            ]
                           }
                         }
                       },
@@ -217,13 +280,18 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "pull": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
-                            "enum": ["button", "contact", "doorbell", "leak", "motion", "smoke"]
+                            "enum": [
+                              "button",
+                              "contact",
+                              "doorbell",
+                              "leak",
+                              "motion",
+                              "smoke"
+                            ]
                           }
                         }
                       },
@@ -237,13 +305,22 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "reversed": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
-                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "smoke", "switch", "valve"]
+                            "enum": [
+                              "button",
+                              "contact",
+                              "doorbell",
+                              "leak",
+                              "light",
+                              "lock",
+                              "motion",
+                              "smoke",
+                              "switch",
+                              "valve"
+                            ]
                           }
                         }
                       },
@@ -257,10 +334,8 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "gpioClock": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
                             "const": "blinkt"
@@ -277,10 +352,8 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "gpioData": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
                             "const": "blinkt"
@@ -297,10 +370,8 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "nLeds": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
                             "const": "blinkt"
@@ -317,13 +388,14 @@
                     ]
                   },
                   {
-                    "oneOf": [{
-                        "properties": {
-                          "pulse": {}
-                        },
+                    "oneOf": [
+                      {
                         "properties": {
                           "device": {
-                            "enum": ["lock", "switch"]
+                            "enum": [
+                              "lock",
+                              "switch"
+                            ]
                           }
                         }
                       },
