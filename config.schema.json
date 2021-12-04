@@ -8,7 +8,7 @@
     "type": "object",
     "properties": {
       "name": {
-        "description": "Plugin name as displayed in the homebridge log.",
+        "description": "Plugin name as displayed in the Homebridge log.",
         "type": "string",
         "required": true,
         "default": "RPi"
@@ -39,7 +39,7 @@
             },
             "noPowerLed": {
               "title": "No Power LED",
-              "description": "Do not expose a Lightbulb service for the Raspberry Pi power LED.",
+              "description": "Do not expose a Light service for the Raspberry Pi power LED.",
               "type": "boolean"
             },
             "noSmokeSensor": {
@@ -49,14 +49,14 @@
             },
             "usbPower": {
               "title": "USB Power",
-              "description": "Expose an Outlet to control power to the USB ports.<br>See the [Wiki]().",
+              "description": "Expose an Outlet to control power to the USB ports.<br><i>Note:</i> Pi models B+, 2B, 3B, and 3B+ only. See the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
               "type": "boolean"
             },
             "devices": {
               "title": "Devices",
               "notitle": true,
               "type": "array",
-              "items":  {
+              "items": {
                 "description": "<b>Device</b>",
                 "type": "object",
                 "properties": {
@@ -65,88 +65,86 @@
                     "description": "The type of the device.",
                     "type": "string",
                     "required": true,
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "Blinkt",
-                        "enum": [ "blinkt" ]
+                        "enum": ["blinkt"]
                       },
                       {
                         "title": "Button",
-                        "enum": [ "button" ]
+                        "enum": ["button"]
                       },
                       {
                         "title": "Contact Sensor",
-                        "enum": [ "contact" ]
+                        "enum": ["contact"]
                       },
                       {
                         "title": "Door Bell",
-                        "enum": [ "doorbell" ]
+                        "enum": ["doorbell"]
                       },
                       {
                         "title": "Fan SHIM",
-                        "enum": [ "fanshim" ]
+                        "enum": ["fanshim"]
                       },
                       {
                         "title": "Leak Sensor",
-                        "enum": [ "leak" ]
+                        "enum": ["leak"]
                       },
                       {
                         "title": "Light",
-                        "enum": [ "light" ]
+                        "enum": ["light"]
                       },
                       {
                         "title": "Lock",
-                        "enum": [ "lock" ]
+                        "enum": ["lock"]
                       },
                       {
                         "title": "Motion Sensor",
-                        "enum": [ "motion" ]
+                        "enum": ["motion"]
                       },
                       {
                         "title": "Servo Motor",
-                        "enum": [ "servo" ]
+                        "enum": ["servo"]
                       },
                       {
                         "title": "Smoke Sensor",
-                        "enum": [ "smoke" ]
+                        "enum": ["smoke"]
                       },
                       {
                         "title": "Switch",
-                        "enum": [ "switch" ]
+                        "enum": ["switch"]
                       },
                       {
                         "title": "Valve",
-                        "enum": [ "valve" ]
+                        "enum": ["valve"]
                       }
                     ]
                   },
                   "name": {
-                     "title": "Name",
-                     "description": "The HomeKit name of the device.",
-                     "type": "string"
+                    "title": "Name",
+                    "description": "The HomeKit name of the device.",
+                    "type": "string"
                   },
                   "gpio": {
-                     "title": "GPIO",
-                     "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Servo Motor, Smoke Sensor, Switch).",
-                     "type": "integer",
-                     "maximum": 31
+                    "title": "GPIO",
+                    "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Servo Motor, Smoke Sensor, Switch).",
+                    "type": "integer",
+                    "maximum": 31
                   },
                   "pull": {
                     "title": "Pull-up/pull-down resistor",
                     "description": "The configuration of the internal pull-up/pull-down resistor (for: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor).",
                     "type": "string",
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "title": "Off",
-                        "enum": [ "off" ]
+                        "enum": ["off"]
                       },
                       {
                         "title": "Pull-down",
-                        "enum": [ "down" ]
+                        "enum": ["down"]
                       },
                       {
                         "title": "Pull-up",
-                        "enum": [ "up"]
+                        "enum": ["up"]
                       }
                     ]
                   },
@@ -163,154 +161,177 @@
                     "maximum": 5000
                   },
                   "gpioClock": {
-                     "title": "GPIO Clock",
-                     "description": "The BCM number of the GPIO pin for the clock signal (for: Blinkt).",
-                     "type": "integer",
-                     "maximum": 31
+                    "title": "GPIO Clock",
+                    "description": "The BCM number of the GPIO pin for the clock signal (for: Blinkt).",
+                    "type": "integer",
+                    "maximum": 31
                   },
                   "gpioData": {
-                     "title": "GPIO Data",
-                     "description": "The BCM number of the GPIO pin for the data signal (for: Blinkt).",
-                     "type": "integer",
-                     "maximum": 31
+                    "title": "GPIO Data",
+                    "description": "The BCM number of the GPIO pin for the data signal (for: Blinkt).",
+                    "type": "integer",
+                    "maximum": 31
                   },
                   "nLeds": {
-                     "title": "# LEDs",
-                     "description": "The number LEDs (for: Blinkt).",
-                     "type": "integer"
+                    "title": "# LEDs",
+                    "description": "The number LEDs (for: Blinkt).",
+                    "type": "integer"
                   }
                 },
-                "allOf": [
-                  {
-                    "oneOf": [
-                      {
+                "allOf": [{
+                    "oneOf": [{
                         "properties": {
-                          "device": { "enum": ["blinkt", "fanshim"] }
+                          "device": {
+                            "enum": ["blinkt", "fanshim"]
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": {
+                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"]
+                          }
                         },
                         "required": ["gpio"]
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "gpio": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"] }
+                          "device": {
+                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "servo", "smoke", "switch", "valve"]
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "gpio": { "not": {} }
+                          "gpio": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "pull": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "motion", "smoke"] }
+                          "device": {
+                            "enum": ["button", "contact", "doorbell", "leak", "motion", "smoke"]
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "pull": { "not": {} }
+                          "pull": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "reversed": {}
                         },
                         "properties": {
-                          "device": { "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "smoke", "switch", "valve"] }
+                          "device": {
+                            "enum": ["button", "contact", "doorbell", "leak", "light", "lock", "motion", "smoke", "switch", "valve"]
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "reversed": { "not": {} }
+                          "reversed": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "gpioClock": {}
                         },
                         "properties": {
-                          "device": { "const": "blinkt" }
+                          "device": {
+                            "const": "blinkt"
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "gpioClock": { "not": {} }
+                          "gpioClock": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "gpioData": {}
                         },
                         "properties": {
-                          "device": { "const": "blinkt" }
+                          "device": {
+                            "const": "blinkt"
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "gpioData": { "not": {} }
+                          "gpioData": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "nLeds": {}
                         },
                         "properties": {
-                          "device": { "const": "blinkt" }
+                          "device": {
+                            "const": "blinkt"
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "nLeds": { "not": {} }
+                          "nLeds": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
                   },
                   {
-                    "oneOf": [
-                      {
+                    "oneOf": [{
                         "properties": {
                           "pulse": {}
                         },
                         "properties": {
-                          "device": { "enum": ["lock", "switch"] }
+                          "device": {
+                            "enum": ["lock", "switch"]
+                          }
                         }
                       },
                       {
                         "properties": {
-                          "pulse": { "not": {} }
+                          "pulse": {
+                            "not": {}
+                          }
                         }
                       }
                     ]
@@ -319,7 +340,7 @@
               }
             }
           }
-       }
+        }
       },
       "timeout": {
         "title": "Timeout",
