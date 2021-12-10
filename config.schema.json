@@ -44,7 +44,7 @@
             },
             "noSmokeSensor": {
               "title": "No Smoke Sensor",
-              "description": "Do not expose a Smoke Sensor service for the Raspberry Pi itself.",
+              "description": "Do not expose a Smoke Sensor service for the Raspberry Pi itself. Triggered when CPU is throttled or low voltage is detected. ",
               "type": "boolean"
             },
             "usbPower": {
