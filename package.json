@@ -19,7 +19,7 @@
   },
   "engines": {
     "homebridge": "^1.4.1",
-    "node": "^16.15.0"
+    "node": "^16.15.1"
   },
   "dependencies": {
     "homebridge-lib": "~5.5.0"
