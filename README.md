@@ -380,7 +380,7 @@ $ sudo sh -c 'cat > /opt/pigpio/cgi/getState' <<'+++'
 # Homebridge plugin for Raspberry Pi.
 
 umask 022
-exec 2> //dev/null
+exec 2> /dev/null
 exec > /tmp/getState.json
 
 cat - <<+
