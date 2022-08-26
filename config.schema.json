@@ -79,6 +79,12 @@
                         ]
                       },
                       {
+                        "title": "DHTxx Temperature/Humidity Sensor.",
+                        "enum": [
+                          "dht"
+                        ]
+                      },
+                      {
                         "title": "Contact Sensor",
                         "enum": [
                           "contact"
@@ -153,7 +159,7 @@
                   },
                   "gpio": {
                     "title": "GPIO",
-                    "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Servo Motor, Smoke Sensor, Switch).",
+                    "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Servo Motor, Smoke Sensor, Switch).",
                     "type": "integer",
                     "maximum": 31
                   },
@@ -231,6 +237,7 @@
                             "enum": [
                               "button",
                               "contact",
+                              "dht",
                               "doorbell",
                               "leak",
                               "light",
@@ -257,6 +264,7 @@
                             "enum": [
                               "button",
                               "contact",
+                              "dht",
                               "doorbell",
                               "leak",
                               "light",
