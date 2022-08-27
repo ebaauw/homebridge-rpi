@@ -22,11 +22,17 @@ This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to Ho
 Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
 It provides the following features:
 - Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
-- Monitoring and controlling from HomeKit of input devices connected to the Pi's GPIO pins, including:
+- Monitoring from HomeKit of input devices connected to the Pi's GPIO pins, including:
   - Buttons;
   - Contact sensors (incl. Eve history);
+  - DHTxx temperature/humidity sensors;
+  - Doorbells
+  - Motion sensors (incl. Eve history);
+  - Leak sensors;
+  - Smoke sensor.
 - Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins, including:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
+  - PWM Dimmable LEDs, exposed as _Lightbulb_;
   - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
 _Target Tilt Angle_;
 - Monitoring and controlling from HomeKit of multi-coloured LEDs of a Pimoroni
