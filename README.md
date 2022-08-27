@@ -21,7 +21,11 @@ Copyright © 2019-2022 Erik Baauw. All rights reserved.
 This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to HomeKit
 Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
 It provides the following features:
-- Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, incl. [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
+- Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, including:
+  - [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
+  - Apple push notifications for throttling or under voltage;
+- Monitoring and controlling the Raspberry Pi power LED (on select models);
+- Controlling power to the Raspberry Pi USB ports (on select models).
 - Monitoring from HomeKit of input devices connected to the Pi's GPIO pins, including:
   - Buttons;
   - Contact sensors (incl. Eve history);
@@ -29,17 +33,17 @@ It provides the following features:
   - Doorbells
   - Motion sensors (incl. Eve history);
   - Leak sensors;
-  - Smoke sensor.
+  - Smoke sensors.
 - Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins, including:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
   - PWM Dimmable LEDs, exposed as _Lightbulb_;
   - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
 _Target Tilt Angle_;
-- Monitoring and controlling from HomeKit of multi-coloured LEDs of a Pimoroni
+- Controlling from HomeKit of multi-coloured LEDs of a Pimoroni
 [Blinkt!](https://shop.pimoroni.com/products/blinkt) or
-[Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi.
+[Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi;
 
-See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) for an overview of supported devices.
+See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) for details.
 
 Unlike most other Raspberry Pi plugins, Homebridge RPi runs on any regular
 Homebridge setup, connecting to the Pi's `pigpiod` daemon over the network.
@@ -79,7 +83,6 @@ Do _not_ try to run `pigpiod` in the container.
 You need a server to run Homebridge.
 This can be anything running [Node.js](https://nodejs.org): from a Raspberry Pi, a NAS system, or an always-on PC running Linux, macOS, or Windows.
 See the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for details.
-I run Homebridge RPi on a Raspberry Pi 3B.
 
 To interact with HomeKit, you need Siri or a HomeKit app on an iPhone, Apple Watch, iPad, iPod Touch, or Apple TV (4th generation or later).
 I recommend to use the latest released versions of iOS, watchOS, and tvOS.  
