@@ -6,7 +6,9 @@
   "footerDisplay": "",
   "schema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
+      "platform": {},
       "name": {
         "description": "Plugin name as displayed in the Homebridge log.",
         "type": "string",
@@ -20,6 +22,7 @@
         "items": {
           "description": "<b>Raspberry Pi</b>",
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "host": {
               "title": "Host",
@@ -49,7 +52,7 @@
             },
             "usbPower": {
               "title": "USB Power",
-              "description": "Expose an Outlet service to control power to the USB ports (only for Raspberry Pi models with four USB 2.0 ports: B+, 2B, 3B, and 3B+).<br>You need to configure pigpiod as well, see the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
+              "description": "Expose an Outlet service to control power to the USB ports. Only for Raspberry Pi models with four USB 2.0 ports: B+, 2B, 3B, and 3B+.<br>You need to configure pigpiod as well, see the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
               "type": "boolean"
             },
             "devices": {
@@ -59,10 +62,11 @@
               "items": {
                 "description": "<b>Device</b>",
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "device": {
                     "title": "Device",
-                    "description": "The type of the device.",
+                    "description": "The type of the device. See the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#gpio-devices\" target=\"_blank\">Wiki</a> for details.",
                     "type": "string",
                     "required": true,
                     "oneOf": [
@@ -127,6 +131,12 @@
                         ]
                       },
                       {
+                        "title": "Rocker",
+                        "enum": [
+                          "rocker"
+                        ]
+                      },
+                      {
                         "title": "Servo Motor",
                         "enum": [
                           "servo"
@@ -159,13 +169,13 @@
                   },
                   "gpio": {
                     "title": "GPIO",
-                    "description": "The BCM number of the GPIO pin (for: Button, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Servo Motor, Smoke Sensor, Switch).",
+                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
                     "type": "integer",
                     "maximum": 31
                   },
                   "pull": {
                     "title": "Pull-up/pull-down resistor",
-                    "description": "The configuration of the internal pull-up/pull-down resistor (for: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor).",
+                    "description": "The configuration of the internal pull-up/pull-down resistor.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -188,33 +198,54 @@
                       }
                     ]
                   },
+                  "debounceTimeout": {
+                    "title": "Rebounce Timeout",
+                    "description": "Time in ms to ignore state changes after initial change. Default 20ms.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maxmimum": 100
+                  },
                   "reversed": {
                     "title": "Reversed",
-                    "description": "The device state is reversed (for: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor, Switch).",
+                    "description": "The device state is reversed<br>For devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor, Switch.",
                     "type": "boolean"
+                  },
+                  "doublePressTimeout": {
+                    "title": "Double Press Timeout",
+                    "description": "Time in ms to wait after a release to see if button is pressed again for Double Press. Default 500ms.  Set to 0 to disable Double Press altogether.<br>For device: Button.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maxmimum": 100
+                  },
+                  "longPressTimeout": {
+                    "title": "Long Press Timeout",
+                    "description": "Time in ms between button press and release after which a Long Press is issued. Default: 1000ms. Set to 0 to disable Long Press.<br>For device: Button.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maxmimum": 100
                   },
                   "pulse": {
                     "title": "Pulse",
-                    "description": "Time in ms to lock the lock or turn off the switch automatically (for: Lock, Switch).",
+                    "description": "Time in ms to lock the lock or turn off the switch automatically<br>For devices: Lock, Switch.",
                     "type": "integer",
                     "minimum": 20,
                     "maximum": 5000
                   },
                   "gpioClock": {
                     "title": "GPIO Clock",
-                    "description": "The BCM number of the GPIO pin for the clock signal (for: Blinkt).",
+                    "description": "The BCM number of the GPIO pin for the clock signal.<br>For device: Blinkt.",
                     "type": "integer",
                     "maximum": 31
                   },
                   "gpioData": {
                     "title": "GPIO Data",
-                    "description": "The BCM number of the GPIO pin for the data signal (for: Blinkt).",
+                    "description": "The BCM number of the GPIO pin for the data signal.<br>For device: Blinkt.",
                     "type": "integer",
                     "maximum": 31
                   },
                   "nLeds": {
                     "title": "# LEDs",
-                    "description": "The number LEDs (for: Blinkt).",
+                    "description": "The number LEDs.<br>For device: Blinkt.",
                     "type": "integer"
                   }
                 },
@@ -228,6 +259,9 @@
                               "blinkt",
                               "fanshim"
                             ]
+                          },
+                          "gpio": {
+                            "not": {}
                           }
                         }
                       },
@@ -243,6 +277,7 @@
                               "light",
                               "lock",
                               "motion",
+                              "rocker",
                               "servo",
                               "smoke",
                               "switch",
@@ -257,49 +292,19 @@
                     ]
                   },
                   {
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "properties": {
                           "device": {
-                            "enum": [
-                              "button",
-                              "contact",
-                              "dht",
-                              "doorbell",
-                              "leak",
-                              "light",
-                              "lock",
-                              "motion",
-                              "servo",
-                              "smoke",
-                              "switch",
-                              "valve"
-                            ]
-                          }
-                        }
-                      },
-                      {
-                        "properties": {
-                          "gpio": {
-                            "not": {}
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "oneOf": [
-                      {
-                        "properties": {
-                          "device": {
-                            "enum": [
-                              "button",
-                              "contact",
-                              "doorbell",
-                              "leak",
-                              "motion",
-                              "smoke"
-                            ]
+                              "enum": [
+                                "button",
+                                "contact",
+                                "doorbell",
+                                "leak",
+                                "motion",
+                                "rocker",
+                                "smoke"
+                              ]
                           }
                         }
                       },
@@ -313,7 +318,33 @@
                     ]
                   },
                   {
-                    "oneOf": [
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "device": {
+                            "enum": [
+                              "button",
+                              "contact",
+                              "doorbell",
+                              "leak",
+                              "motion",
+                              "rocker",
+                              "smoke"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "debounceTimeout": {
+                            "not": {}
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
                       {
                         "properties": {
                           "device": {
@@ -335,6 +366,42 @@
                       {
                         "properties": {
                           "reversed": {
+                            "not": {}
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "device": {
+                            "const": "button"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "doublePressTimeout": {
+                            "not": {}
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "device": {
+                            "const": "button"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "longPressTimeout": {
                             "not": {}
                           }
                         }
@@ -396,7 +463,7 @@
                     ]
                   },
                   {
-                    "oneOf": [
+                    "anyOf": [
                       {
                         "properties": {
                           "device": {
@@ -404,7 +471,7 @@
                               "lock",
                               "switch"
                             ]
-                          }
+	                      }
                         }
                       },
                       {
