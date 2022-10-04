@@ -199,11 +199,11 @@
                     ]
                   },
                   "debounceTimeout": {
-                    "title": "Rebounce Timeout",
-                    "description": "Time in ms to ignore state changes after initial change. Default 20ms.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
+                    "title": "Debounce Timeout",
+                    "description": "Time in ms to ignore state changes for debouncing. Default 20ms.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
                     "type": "integer",
                     "minimum": 0,
-                    "maxmimum": 100
+                    "maxmimum": 300
                   },
                   "reversed": {
                     "title": "Reversed",
