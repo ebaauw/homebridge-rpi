@@ -83,7 +83,7 @@
                         ]
                       },
                       {
-                        "title": "DHTxx Temperature/Humidity Sensor.",
+                        "title": "DHTxx Temperature/Humidity Sensor",
                         "enum": [
                           "dht"
                         ]
@@ -128,6 +128,12 @@
                         "title": "Motion Sensor",
                         "enum": [
                           "motion"
+                        ]
+                      },
+                      {
+                        "title": "Chain of P9813 LED Controllers",
+                        "enum": [
+                          "p9813"
                         ]
                       },
                       {
@@ -257,7 +263,8 @@
                           "device": {
                             "enum": [
                               "blinkt",
-                              "fanshim"
+                              "fanshim",
+                              "p9813"
                             ]
                           },
                           "gpio": {
@@ -413,7 +420,10 @@
                       {
                         "properties": {
                           "device": {
-                            "const": "blinkt"
+                            "enum": [
+                              "blinkt",
+                              "p9813"
+                            ]
                           }
                         }
                       },
@@ -431,7 +441,10 @@
                       {
                         "properties": {
                           "device": {
-                            "const": "blinkt"
+                            "enum": [
+                              "blinkt",
+                              "p9813"
+                            ]
                           }
                         }
                       },
@@ -449,7 +462,10 @@
                       {
                         "properties": {
                           "device": {
-                            "const": "blinkt"
+                            "enum": [
+                              "blinkt",
+                              "p9813"
+                            ]
                           }
                         }
                       },

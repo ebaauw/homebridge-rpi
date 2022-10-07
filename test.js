@@ -1,6 +1,7 @@
 'use strict'
 
 const Blinkt = require('./lib/Blinkt')
+const P9813 = require('./lib/P9813')
 const PigpioClient = require('./lib/PigpioClient')
 
 async function delay (ms = 100) {
@@ -9,17 +10,41 @@ async function delay (ms = 100) {
   })
 }
 
+const host = 'pi5'
+
+const hosts = {
+  // pi10: { // FanSHIM
+  //   gpioClock: 14,
+  //   gpioData: 15,
+  //   nLeds: 1
+  // },
+  pi10: {
+    gpioClock: 10,
+    gpioData: 11,
+    nLeds: 2,
+    type: 'p9813'
+  },
+  pi5: { // Blinkt!
+    gpioClock: 24,
+    gpioData: 23,
+    nLeds: 8
+  }
+}
+const config = hosts[host]
+
 class Test {
   constructor () {
-    this.pi = new PigpioClient({ host: 'pi5' })
-    this.blinkt = new Blinkt(this.pi)
+    this.pi = new PigpioClient({ host })
+    this.blinkt = config.type === 'p9818'
+      ? new P9813(this.pi, config)
+      : new Blinkt(this.pi, config)
     process.on('SIGINT', async (signal) => {
       console.log('Got %s', signal)
       this.interrupted = true
     })
   }
 
-  async colourLoop (bri = 1) {
+  async colourLoop (bri = 0x08) {
     // let d
     let r = 0
     let g = 1
@@ -70,7 +95,7 @@ class Test {
   }
 
   // Inspired by: https://github.com/pimoroni/blinkt/blob/master/examples/larson.py
-  async cylon (bri = 1) {
+  async cylon (bri = 0xFF) {
     const values = [0, 0, 0, 0, 0, 0, 0, 16, 64, 255, 64, 16, 0, 0, 0, 0, 0, 0, 0]
     const delays = [
       1 + Math.sin(0.5 * Math.PI),
@@ -88,7 +113,8 @@ class Test {
     let offset = 11
     let up = true
     while (true) {
-      for (let i = 0; i <= 7; i++) {
+      console.log('offset: %d', offset)
+      for (let i = 0; i < config.nLeds; i++) {
         this.blinkt.setLed(i, bri, values[offset + i], 0, 0)
       }
       await this.blinkt.update()
@@ -107,12 +133,12 @@ class Test {
 
   async main () {
     try {
-      await this.blinkt.init()
+      await this.blinkt.init(true)
       // await this.colourLoop()
       // this.interrupted = false
       await this.cylon()
       console.log('Exiting...')
-      await this.blinkt.disconnect()
+      await this.blinkt.disconnect(true)
       await this.pi.disconnect()
     } catch (error) {
       console.log(error)
