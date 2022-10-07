@@ -1,7 +1,7 @@
 'use strict'
 
-const Blinkt = require('./lib/Blinkt')
-const P9813 = require('./lib/P9813')
+const Blinkt = require('./lib/PigpioLedChain/Blinkt')
+const P9813 = require('./lib/PigpioLedChain/P9813')
 const PigpioClient = require('./lib/PigpioClient')
 
 async function delay (ms = 100) {
@@ -10,27 +10,27 @@ async function delay (ms = 100) {
   })
 }
 
-const host = 'pi5'
+// const host = 'pi10'
+// const config = { // FanSHIM
+//   gpioClock: 14,
+//   gpioData: 15,
+//   nLeds: 1
+// }
 
-const hosts = {
-  // pi10: { // FanSHIM
-  //   gpioClock: 14,
-  //   gpioData: 15,
-  //   nLeds: 1
-  // },
-  pi10: {
-    gpioClock: 10,
-    gpioData: 11,
-    nLeds: 2,
-    type: 'p9813'
-  },
-  pi5: { // Blinkt!
-    gpioClock: 24,
-    gpioData: 23,
-    nLeds: 8
-  }
+// const host = 'pi10'
+// const config = { // P9813
+//   gpioClock: 10,
+//   gpioData: 11,
+//   nLeds: 2,
+//   type: 'p9813'
+// }
+
+const host = 'pi5'
+const config = { // Blinkt!
+  gpioClock: 24,
+  gpioData: 23,
+  nLeds: 8
 }
-const config = hosts[host]
 
 class Test {
   constructor () {
@@ -113,7 +113,6 @@ class Test {
     let offset = 11
     let up = true
     while (true) {
-      console.log('offset: %d', offset)
       for (let i = 0; i < config.nLeds; i++) {
         this.blinkt.setLed(i, bri, values[offset + i], 0, 0)
       }
@@ -134,8 +133,8 @@ class Test {
   async main () {
     try {
       await this.blinkt.init(true)
-      // await this.colourLoop()
-      // this.interrupted = false
+      await this.colourLoop()
+      this.interrupted = false
       await this.cylon()
       console.log('Exiting...')
       await this.blinkt.disconnect(true)
