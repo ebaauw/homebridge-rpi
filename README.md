@@ -42,6 +42,7 @@ _Target Tilt Angle_;
 - Controlling from HomeKit of multi-coloured LEDs of a Pimoroni
 [Blinkt!](https://shop.pimoroni.com/products/blinkt) or
 [Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi;
+- Controlling from HomeKit of P8913-based chainable RGB LEDs, like the [Grove Chainable LED v2](https://github.com/Seeed-Studio/Grove_Chainable_RGB_LED).
 
 See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) for details.
 
