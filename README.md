@@ -53,18 +53,6 @@ In particular, Homebridge RPi:
 - Does _not_ require any C components;
 - Does _not_ require `root` privilege.
 
-### Work in Progress
-Note that this plugin is still under development.
-Todo:
-- Configurable timeout settings for debouncing input,
-button double press and long press;
-- Support NeoPixel LEDs.
-
-Sometimes, Homebridge RPi doesn't properly close the `pigpiod` file
-handles.
-This can result in an `FO (104): error no handle available (-24)` error.
-Use `rpi -H xx.xx.xx.xx closeHandles` to force-close the stale handles.
-
 ### Prerequisites
 Homebridge RPi connects (locally or remotely) to the
 [`pigpiod`](http://abyz.me.uk/rpi/pigpio/pigpiod.html) daemon
@@ -494,6 +482,12 @@ $ rpi -H pi4 info
 ```
 
 ### Troubleshooting
+
+#### File Handles
+When Homebridge crashes, Homebridge RPi might not properly close the `pigpiod` file
+handles.
+This can result in an `FO (104): error no handle available (-24)` error.
+Use `rpi -H xx.xx.xx.xx closeHandles` to force-close the stale handles.
 
 #### Check Dependencies
 If you run into Homebridge startup issues, please double-check what versions of Node.js and of Homebridge have been installed.
