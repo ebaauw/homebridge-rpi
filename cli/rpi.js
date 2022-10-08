@@ -319,7 +319,18 @@ class Main extends homebridgeLib.CommandLineTool {
         const h = await this.pi.command(PI_CMD.FC, handle)
         if (h != null) {
           nClosed++
-          this.debug('%s: closed handle %d', this.pi.hostname, handle)
+          this.debug('%s: closed file handle %d', this.pi.hostname, handle)
+        }
+      } catch (error) {
+        // ignore
+      }
+    }
+    for (let handle = 0; handle <= 20; handle++) {
+      try {
+        const h = await this.pi.command(PI_CMD.PROCD, handle)
+        if (h != null) {
+          nClosed++
+          this.debug('%s: closed proc handle %d', this.pi.hostname, handle)
         }
       } catch (error) {
         // ignore
