@@ -38,6 +38,8 @@ class Test {
     this.blinkt = config.type === 'p9818'
       ? new P9813(this.pi, config)
       : new Blinkt(this.pi, config)
+    // this.blinkt
+    //   .on('led', (id, led) => { console.log('led %d: %j', id, led) })
     process.on('SIGINT', async (signal) => {
       console.log('Got %s', signal)
       this.interrupted = true
