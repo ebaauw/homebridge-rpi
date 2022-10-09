@@ -35,6 +35,8 @@ const config = { // Blinkt!
 class Test {
   constructor () {
     this.pi = new PigpioClient({ host })
+    // this.pi
+    //   .on('request', (request) => { console.log('request: %j', request) })
     this.blinkt = config.type === 'p9818'
       ? new P9813(this.pi, config)
       : new Blinkt(this.pi, config)
@@ -143,6 +145,8 @@ class Test {
       await this.pi.disconnect()
     } catch (error) {
       console.log(error)
+    } finally {
+      await this.pi.disconnect()
     }
   }
 }
