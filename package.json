@@ -30,12 +30,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wjsroot/homebridge-rpi.git"
+    "url": "git+https://github.com/ebaauw/homebridge-rpi.git"
   },
   "bugs": {
-    "url": "https://github.com/wjsroot/homebridge-rpi/issues"
+    "url": "https://github.com/ebaauw/homebridge-rpi/issues"
   },
-  "homepage": "https://github.com/wjsroot/homebridge-rpi#readme",
+  "homepage": "https://github.com/ebauuw/homebridge-rpi#readme",
   "funding": [
     {
       "type": "github",
