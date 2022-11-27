@@ -89,6 +89,12 @@
                         ]
                       },
                       {
+                        "title": "Carbon Monoxide Sensor",
+                        "enum": [
+                          "carbonmonoxide"
+                        ]
+                      },
+                      {
                         "title": "Contact Sensor",
                         "enum": [
                           "contact"
@@ -175,13 +181,13 @@
                   },
                   "gpio": {
                     "title": "GPIO",
-                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
+                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
                     "type": "integer",
                     "maximum": 31
                   },
                   "pull": {
                     "title": "Pull-up/pull-down resistor",
-                    "description": "The configuration of the internal pull-up/pull-down resistor.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
+                    "description": "The configuration of the internal pull-up/pull-down resistor.<br>For input devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -206,14 +212,14 @@
                   },
                   "debounceTimeout": {
                     "title": "Debounce Timeout",
-                    "description": "Time in ms to ignore state changes for debouncing. Default 20ms.<br>For input devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
+                    "description": "Time in ms to ignore state changes for debouncing. Default 20ms.<br>For input devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
                     "type": "integer",
                     "minimum": 0,
                     "maxmimum": 300
                   },
                   "reversed": {
                     "title": "Reversed",
-                    "description": "The device state is reversed<br>For devices: Button, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor, Switch.",
+                    "description": "The device state is reversed<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor, Switch.",
                     "type": "boolean"
                   },
                   "doublePressTimeout": {
@@ -277,6 +283,7 @@
                           "device": {
                             "enum": [
                               "button",
+                              "carbonmonoxide",
                               "contact",
                               "dht",
                               "doorbell",
@@ -305,6 +312,7 @@
                           "device": {
                               "enum": [
                                 "button",
+                                "carbonmonoxide",
                                 "contact",
                                 "doorbell",
                                 "leak",
@@ -331,6 +339,7 @@
                           "device": {
                             "enum": [
                               "button",
+                              "carbonmonoxide",
                               "contact",
                               "doorbell",
                               "leak",
@@ -357,6 +366,7 @@
                           "device": {
                             "enum": [
                               "button",
+                              "carbonmonoxide",
                               "contact",
                               "doorbell",
                               "leak",
