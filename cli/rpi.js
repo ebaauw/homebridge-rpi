@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // homebridge-rpi/cli/rpi.js
-// Copyright © 2019-2022 Erik Baauw.  All rights reserved.
+// Copyright © 2019-2023 Erik Baauw.  All rights reserved.
 //
 // Homebridge plugin for Raspberry Pi.
 
