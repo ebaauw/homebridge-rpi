@@ -12,7 +12,7 @@ cat - <<+
 {\
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
-"powerLed": "$(cat /sys/class/leds/led1/brightness)",\
+"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
 "load":"$(uptime)",\
 "temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\

@@ -385,7 +385,7 @@ cat - <<+
 {\
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
-"powerLed": "$(cat /sys/class/leds/led1/brightness)",\
+"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
 "load":"$(uptime)",\
 "temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\
@@ -430,13 +430,13 @@ Note that `date` is in UTC, but `boot` is in local time.
 `pigpio` provides a hook to access files remotely.
 Homebridge RPi uses this hook to get the Raspberry Pi's serial number from
 `/proc/cpuinfo`, to get the output from the `getState` script, and to set the
-state of the power LED through `/sys/class/leds/led1/brightness`.
+state of the power LED through `/sys/class/leds/PWR/brightness`.
 These files need to be whitelisted, in `/opt/pigpio/access`:
 ```
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
-/sys/class/leds/led1/brightness w
+/sys/class/leds/PWR/brightness w
 +
 ```
 To check that the files can be read, issue `fo` to open the file for reading:
