@@ -320,6 +320,17 @@ even though it originates from the local host.
 In this case, Homebridge RPi will report an ECONNREFUSED error trying to connect to `pigpiod`.
 To prevent this error, configure `pigpiod` to accept remote connections, see below.
 
+#### File Access
+`pigpio` provides a hook to access files remotely.
+Homebridge RPi uses this hook to set the
+state of the power LED through `/sys/class/leds/PWR/brightness`.
+This files needs to be whitelisted, in `/opt/pigpio/access`:
+```
+$ sudo sh -c 'cat - > /opt/pigpio/access' <<+
+/sys/class/leds/PWR/brightness w
++
+```
+
 ### Remote Raspberry Pi Configuration
 Note that you need to execute the following steps on each of the remote
 Raspberry Pi computers you want Homebridge RPi to expose.
