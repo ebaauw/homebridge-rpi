@@ -22,7 +22,7 @@
     "node": "^18.15.0"
   },
   "dependencies": {
-    "homebridge-lib": "~6.3.12"
+    "homebridge-lib": "~6.3.13"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
