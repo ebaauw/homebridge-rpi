@@ -19,10 +19,10 @@
   },
   "engines": {
     "homebridge": "^1.6.0",
-    "node": "^18.15.0"
+    "node": "^18.16.0"
   },
   "dependencies": {
-    "homebridge-lib": "~6.3.13"
+    "homebridge-lib": "~6.3.14"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
