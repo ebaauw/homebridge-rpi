@@ -18,11 +18,11 @@
     "rpi": "cli/rpi.js"
   },
   "engines": {
-    "homebridge": "^1.6.0",
+    "homebridge": "^1.6.1",
     "node": "^18.16.0"
   },
   "dependencies": {
-    "homebridge-lib": "~6.3.14"
+    "homebridge-lib": "~6.3.17"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
