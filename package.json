@@ -4,7 +4,7 @@
   "displayName": "Homebridge RPi",
   "author": "Erik Baauw",
   "license": "Apache-2.0",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "keywords": [
     "homebridge-plugin",
     "raspberrypi",
