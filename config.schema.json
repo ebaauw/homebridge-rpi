@@ -113,6 +113,12 @@
                         ]
                       },
                       {
+                        "title": "Garage Door Opener",
+                        "enum": [
+                          "garage"
+                        ]
+                      },
+                      {
                         "title": "Leak Sensor",
                         "enum": [
                           "leak"
@@ -181,7 +187,7 @@
                   },
                   "gpio": {
                     "title": "GPIO",
-                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, DHTxx Sensor, Door Bell, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
+                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, DHTxx Sensor, Door Bell, Garage Door Opener, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
                     "type": "integer",
                     "maximum": 31
                   },
@@ -219,7 +225,7 @@
                   },
                   "reversed": {
                     "title": "Reversed",
-                    "description": "The device state is reversed<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Smoke Sensor, Switch.",
+                    "description": "The device state is reversed<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Garage Door Opener, Leak Sensor, Motion Sensor, Smoke Sensor, Switch.",
                     "type": "boolean"
                   },
                   "doublePressTimeout": {
@@ -287,6 +293,7 @@
                               "contact",
                               "dht",
                               "doorbell",
+                              "garage",
                               "leak",
                               "light",
                               "lock",
@@ -369,6 +376,7 @@
                               "carbonmonoxide",
                               "contact",
                               "doorbell",
+                              "garage",
                               "leak",
                               "light",
                               "lock",
