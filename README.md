@@ -25,6 +25,7 @@ It provides the following features:
   - [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
   - Apple push notifications for throttling or under voltage;
 - Monitoring and controlling the Raspberry Pi power LED (on select models);
+- Monitoring the Raspberry Pi fan speed (on select models);
 - Controlling power to the Raspberry Pi USB ports (on select models).
 - Monitoring from HomeKit of input devices connected to the Pi's GPIO pins, including:
   - Buttons;
@@ -61,9 +62,13 @@ on the Raspberry Pi.
 It uses the [Socket Interface](http://abyz.me.uk/rpi/pigpio/sif.html),
 just as the [`pigs`](http://abyz.me.uk/rpi/pigpio/pigs.html) command.
 This daemon is part of the [`pigpio`](https://github.com/joan2937/pigpio)
-library, which is included in Raspbian.
-While this daemon comes with Raspbian, it needs to be enabled and
-configured for use by Homebridge RPi, see [**Installation**](#installation).  
+library, which is included in Raspberry Pi OS.
+While this daemon comes with Raspberry Pi OS, it needs to be enabled and
+configured for use by Homebridge RPi, see [**Installation**](#installation).
+
+Note that `pigpiod` currently doesn't support the Raspberry Pi 5.
+Consequently, Homebridge RPi cannot support GPIO devices on a Raspberry Pi 5 and
+cannot connect to a remote Raspberry Pi 5.
 
 If you run Homebridge in a container on the Raspberry Pi, let
 Homebridge RPi connect remotely to (the `pigpiod` daemon running on) the host.
@@ -296,7 +301,7 @@ If you expose devices connected to the GPIO pins on the local Raspberry Pi,
 you need to enable the `pidpiod` service.
 
 #### Enable `pigpiod` Service
-Raspbian comes with a standard service for `pigpiod`,
+Raspberry Pi OS comes with a standard service for `pigpiod`,
 in `/lib/systemd/system/pigpiod.service`.
 By default, this service is disabled.
 To enable the service, so it starts automatically on system boot, issue:
@@ -336,7 +341,7 @@ Note that you need to execute the following steps on each of the remote
 Raspberry Pi computers you want Homebridge RPi to expose.
 
 #### Configure `pigpiod` Service
-Raspbian comes with a standard service for `pigpiod`, in
+Raspberry Pi OS comes with a standard service for `pigpiod`, in
 `/lib/systemd/system/pigpiod.service`.
 By default `pigpiod` won't accept remote connections, due to the `-l` option.
 To enable remote connections, run `sudo raspi-config` and set _Remote GPIO_ (P8)
