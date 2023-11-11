@@ -40,6 +40,11 @@
               "description": "Do not expose a service for the Raspberry Pi itself.",
               "type": "boolean"
             },
+            "noFan": {
+              "title": "No Fan",
+              "description": "Do not expose a Fan service for the Raspberry Pi fan.",
+              "type": "boolean"
+            },
             "noPowerLed": {
               "title": "No Power LED",
               "description": "Do not expose a Lightbulb service for the Raspberry Pi power LED.",
