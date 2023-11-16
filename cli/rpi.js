@@ -228,7 +228,7 @@ class Main extends homebridgeLib.CommandLineTool {
     return info
   }
 
-  async _getState (noPowerLed) {
+  async _getState (noPowerLed, noFan) {
     let state
     if (['localhost', '127.0.0.1'].includes(this._clargs.options.host)) {
       const rpiInfo = new RpiInfo()
@@ -239,7 +239,7 @@ class Main extends homebridgeLib.CommandLineTool {
         .on('exec', (cmd) => {
           this.debug('exec %s', cmd)
         })
-      state = await rpiInfo.getState(noPowerLed)
+      state = await rpiInfo.getState(noPowerLed, noFan)
     } else {
       await this.pi.shell('getState')
       const text = await this.pi.readFile('/tmp/getState.json')
@@ -267,7 +267,7 @@ class Main extends homebridgeLib.CommandLineTool {
   async info (...args) {
     this._parseCommandArgs(...args)
     const info = await this._getInfo()
-    info.state = await this._getState(!info.powerLed)
+    info.state = await this._getState(!info.supportsPowerLed, !info.supportsFan)
     const json = this.jsonFormatter.stringify(info)
     this.print(json)
   }
@@ -275,7 +275,7 @@ class Main extends homebridgeLib.CommandLineTool {
   async state (...args) {
     this._parseCommandArgs(...args)
     const info = await this._getInfo()
-    const state = await this._getState(!info.powerLed)
+    const state = await this._getState(!info.supportsPowerLed, !info.supportsFan)
     const json = this.jsonFormatter.stringify(state)
     this.print(json)
   }
@@ -297,7 +297,7 @@ class Main extends homebridgeLib.CommandLineTool {
     const info = await this._getInfo()
     for (;;) {
       try {
-        const state = await this._getState(!info.powerLed)
+        const state = await this._getState(!info.supportsPowerLed, !info.supportsFan)
         const json = this.jsonFormatter.stringify(state)
         this.print(json)
       } catch (error) {
@@ -357,7 +357,7 @@ class Main extends homebridgeLib.CommandLineTool {
       })
       .parse(...args)
     const info = await this._getInfo()
-    if (!info.powerLed) {
+    if (!info.supportsPowerLed) {
       throw new Error(
         `${this._clargs.options.host}: Raspberry Pi ${info.model}: no power LED support`
       )
@@ -365,7 +365,7 @@ class Main extends homebridgeLib.CommandLineTool {
     if (clargs.options.on != null) {
       await this.pi.writeFile(RpiInfo.powerLed, clargs.options.on ? '1' : '0')
     }
-    const { powerLed } = await this._getState()
+    const { powerLed } = await this._getState(false, true)
     this.print(powerLed ? 'on' : 'off')
   }
 }
