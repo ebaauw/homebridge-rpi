@@ -424,19 +424,19 @@ The return status `0` indicates success.
 This should have created an output file in `/tmp`:
 ```
 $ ls -l /tmp/getState.json
--rw-r--r-- 1 root root 269 Dec 18 13:11 /tmp/getState.json
+-rw-r--r-- 1 root root 268 Nov 16 15:12 /tmp/getState.json
 ```
 The `.json` file contains the script's output in JSON:
 ```
 $ json /tmp/getState.json
 {
-  "date": "2020-12-18T12:11:39+00:00",
-  "boot": "2020-12-06 16:22:12",
-  "powerLed": "255",
-  "load": " 13:11:39 up 11 days, 20:49,  2 users,  load average: 0.18, 0.11, 0.07",
-  "temp": "temp=56.4'C",
-  "freq": "frequency(45)=600000000",
-  "volt": "volt=1.2000V",
+  "date": "2023-11-16T14:12:10+00:00",
+  "boot": "2023-10-15 16:23:22",
+  "powerLed": "0",
+  "load": " 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21",
+  "temp": "temp=52.5'C",
+  "freq": "frequency(48)=1800457088",
+  "volt": "volt=0.9035V",
   "throttled": "throttled=0x0"
 }
 ```
@@ -465,7 +465,7 @@ Note the returned file descriptor, in this case `0`.
 Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
 ```
 $ pigs -a fr 0 1024
-269 {"date":"2020-12-18T12:16:20+00:00","boot": "2020-12-06 16:22:12","powerLed": "255","load":" 13:16:20 up 11 days, 20:54,  2 users,  load average: 0.06, 0.08, 0.07","temp":"temp=55.8'C","freq":"frequency(45)=600000000","volt":"volt=1.2000V","throttled":"throttled=0x0"}
+268 {"date":"2023-11-16T14:12:10+00:00","boot": "2023-10-15 16:23:22","powerLed": "0","load":" 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21","temp":"temp=52.5'C","freq":"frequency(48)=1800457088","volt":"volt=0.9035V","throttled":"throttled=0x0"}
 ```
 Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
@@ -479,22 +479,31 @@ This should return the Pi's status (serial number redacted):
 ```
 $ rpi -H pi4 info
 {
-  "id": "0000000069265134",
-  "manufacturer": "Sony UK",
-  "memory": "1GB",
-  "model": "3B",
-  "processor": "BCM2837",
-  "revision": "1.2",
   "gpioMask": "0x0FFFFFFC",
   "gpioMaskSerial": "0x0000C000",
-  "date": "2020-12-18T12:19:16.000Z",
-  "boot": "2020-12-06T15:22:12.000Z",
-  "powerLed": 255,
-  "load": 0.11,
-  "temp": 56.4,
-  "freq": 600000000,
-  "volt": 1.2,
-  "throttled": "0x00000000"
+  "id": "10000000xxxxxxxx",
+  "isRpi": true,
+  "manufacturer": "Sony UK",
+  "memory": "4GB",
+  "model": "4B",
+  "modelRevision": "1.1",
+  "prettyName": "Raspberry Pi 4B 1.1 (4GB)",
+  "processor": "BCM2711",
+  "supportsFan": false,
+  "supportsPowerLed": true,
+  "supportsUsbPower": false,
+  "revision": "C03111",
+  "state": {
+    "date": "2023-11-16T14:12:10.000Z",
+    "boot": "2023-10-15T14:23:22.000Z",
+    "powerLed": 0,
+    "fan": null,
+    "load": 0.25,
+    "temp": 52.5,
+    "freq": 1800457088,
+    "volt": 0.9035,
+    "throttled": "0x00000000"
+  }
 }
 ```
 
