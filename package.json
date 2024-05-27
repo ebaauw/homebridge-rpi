@@ -13,16 +13,17 @@
     "pigpio",
     "gpio"
   ],
+  "type": "module",
   "main": "index.js",
   "bin": {
     "rpi": "cli/rpi.js"
   },
   "engines": {
-    "homebridge": "^1.7.0",
+    "homebridge": "^1.8.1",
     "node": "^20||^18"
   },
   "dependencies": {
-    "homebridge-lib": "~6.7.5"
+    "homebridge-lib": "~7.0.1"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
