@@ -1,8 +1,7 @@
-'use strict'
-
-const Blinkt = require('./lib/PigpioLedChain/Blinkt')
-const P9813 = require('./lib/PigpioLedChain/P9813')
-const PigpioClient = require('./lib/PigpioClient')
+import { PigpioClient } from './lib/PigpioClient.js'
+import { PigpioLedChain } from './lib/PigpioLedChain.js'
+import './lib/PigpioLedChain/Blinkt.js'
+import './lib/PigpioLedChain/P9813.js'
 
 async function delay (ms = 100) {
   return new Promise((resolve, reject) => {
@@ -25,7 +24,7 @@ async function delay (ms = 100) {
 //   type: 'p9813'
 // }
 
-const host = 'pi5'
+const host = 'pi6'
 const config = { // Blinkt!
   gpioClock: 24,
   gpioData: 23,
@@ -38,8 +37,8 @@ class Test {
     // this.pi
     //   .on('request', (request) => { console.log('request: %j', request) })
     this.blinkt = config.type === 'p9818'
-      ? new P9813(this.pi, config)
-      : new Blinkt(this.pi, config)
+      ? new PigpioLedChain.P9813(this.pi, config)
+      : new PigpioLedChain.Blinkt(this.pi, config)
     // this.blinkt
     //   .on('led', (id, led) => { console.log('led %d: %j', id, led) })
     process.on('SIGINT', async (signal) => {

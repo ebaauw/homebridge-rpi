@@ -5,22 +5,30 @@
 //
 // Homebridge plugin for Raspberry Pi.
 
-'use strict'
+import { createRequire } from 'node:module'
 
-const homebridgeLib = require('homebridge-lib')
-const PigpioClient = require('../lib/PigpioClient')
-const RpiInfo = require('../lib/RpiInfo')
+import { timeout } from 'homebridge-lib'
+import { CommandLineParser } from 'hb-lib-tools/CommandLineParser'
+import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
+import { JsonFormatter } from 'hb-lib-tools/JsonFormatter'
+import { OptionParser } from 'hb-lib-tools/OptionParser'
+import { SystemInfo } from 'hb-lib-tools/SystemInfo'
+
+import { PigpioClient } from '../lib/PigpioClient.js'
+import { RpiInfo } from '../lib/RpiInfo.js'
+
+const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
 
 const PI_CMD = PigpioClient.commands
 
-const { b, u } = homebridgeLib.CommandLineTool
-const { UsageError } = homebridgeLib.CommandLineParser
+const { b, u } = CommandLineTool
+const { UsageError } = CommandLineParser
 
 const usage = {
   rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
   info: `${b('info')} [${b('-hns')}]`,
-  state: `${b('info')} [${b('-hns')}]`,
+  state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
   closeHandles: `${b('closeHandles')} [${b('-h')}]`,
   led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`
@@ -136,7 +144,7 @@ function toHex (n) {
   return '0x' + ('00000000' + n.toString(16).toUpperCase()).slice(-8)
 }
 
-class Main extends homebridgeLib.CommandLineTool {
+class Main extends CommandLineTool {
   constructor () {
     super()
     this.usage = usage.rpi
@@ -178,7 +186,7 @@ class Main extends homebridgeLib.CommandLineTool {
   }
 
   parseArguments () {
-    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    const parser = new CommandLineParser(packageJson)
     const clargs = {
       options: {
         host: 'localhost'
@@ -189,7 +197,7 @@ class Main extends homebridgeLib.CommandLineTool {
       .flag('D', 'debug', () => { this.setOptions({ debug: true, chalk: true }) })
       .version('V', 'version')
       .option('H', 'host', (value) => {
-        homebridgeLib.OptionParser.toHost('host', value, false, true)
+        OptionParser.toHost('host', value, false, true)
         clargs.options.host = value
       })
       .parameter('command', (value) => {
@@ -206,7 +214,7 @@ class Main extends homebridgeLib.CommandLineTool {
   async _getInfo () {
     let info
     if (['localhost', '127.0.0.1'].includes(this._clargs.options.host)) {
-      const systemInfo = new homebridgeLib.SystemInfo()
+      const systemInfo = new SystemInfo()
       systemInfo
         .on('readFile', (fileName) => {
           this.debug('read file %s', fileName)
@@ -221,7 +229,7 @@ class Main extends homebridgeLib.CommandLineTool {
       info = systemInfo.hwInfo
     } else {
       const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
-      info = homebridgeLib.SystemInfo.parseRpiCpuInfo(cpuInfo)
+      info = SystemInfo.parseRpiCpuInfo(cpuInfo)
     }
     info.gpioMask = toHex(info.gpioMask)
     info.gpioMaskSerial = toHex(info.gpioMaskSerial)
@@ -250,7 +258,7 @@ class Main extends homebridgeLib.CommandLineTool {
   }
 
   async _parseCommandArgs (...args) {
-    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    const parser = new CommandLineParser(packageJson)
     const clargs = { options: {} }
     parser
       .help('h', 'help', this.help)
@@ -261,7 +269,7 @@ class Main extends homebridgeLib.CommandLineTool {
         clargs.options.sortKeys = true
       })
       .parse(...args)
-    this.jsonFormatter = new homebridgeLib.JsonFormatter(clargs.options)
+    this.jsonFormatter = new JsonFormatter(clargs.options)
   }
 
   async info (...args) {
@@ -303,12 +311,12 @@ class Main extends homebridgeLib.CommandLineTool {
       } catch (error) {
         this.warn(error)
       }
-      await homebridgeLib.timeout(5000)
+      await timeout(5000)
     }
   }
 
   async closeHandles (...args) {
-    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    const parser = new CommandLineParser(packageJson)
     parser
       .help('h', 'help', this.help)
       .parse(...args)
@@ -341,7 +349,7 @@ class Main extends homebridgeLib.CommandLineTool {
 
   async led (...args) {
     const clargs = { options: {} }
-    const parser = new homebridgeLib.CommandLineParser(packageJson)
+    const parser = new CommandLineParser(packageJson)
     parser
       .help('h', 'help', this.help)
       .remaining((value) => {

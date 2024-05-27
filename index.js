@@ -3,11 +3,15 @@
 //
 // Homebridge plugin for Raspberry Pi.
 
-'use strict'
+import { createRequire } from 'node:module'
 
-const RpiPlatform = require('./lib/RpiPlatform')
+import { RpiPlatform } from './lib/RpiPlatform.js'
+
+const require = createRequire(import.meta.url)
 const packageJson = require('./package.json')
 
-module.exports = function (homebridge) {
+function main (homebridge) {
   RpiPlatform.loadPlatform(homebridge, packageJson, 'RPi', RpiPlatform)
 }
+
+export { main as default }
