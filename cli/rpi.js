@@ -239,15 +239,17 @@ class Main extends CommandLineTool {
   async _getState (noPowerLed, noFan) {
     let state
     if (['localhost', '127.0.0.1'].includes(this._clargs.options.host)) {
-      const rpiInfo = new RpiInfo()
-      rpiInfo
-        .on('readFile', (fileName) => {
-          this.debug('read file %s', fileName)
-        })
-        .on('exec', (cmd) => {
-          this.debug('exec %s', cmd)
-        })
-      state = await rpiInfo.getState(noPowerLed, noFan)
+      if (this.rpiInfo == null) {
+        this.rpiInfo = new RpiInfo()
+        this.rpiInfo
+          .on('readFile', (fileName) => {
+            this.debug('read file %s', fileName)
+          })
+          .on('exec', (cmd) => {
+            this.debug('exec %s', cmd)
+          })
+      }
+      state = await this.rpiInfo.getState(noPowerLed, noFan)
     } else {
       await this.pi.shell('getState')
       const text = await this.pi.readFile('/tmp/getState.json')
