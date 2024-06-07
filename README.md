@@ -402,6 +402,7 @@ cat - <<+
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
 "powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
+"fan": "$(cat /sys/devices/platform/cooling_fan/hwmon/hwmon?/pwm1)",\
 "load":"$(uptime)",\
 "temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\
