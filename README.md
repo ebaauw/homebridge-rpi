@@ -401,13 +401,14 @@ cat - <<+
 {\
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
-"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
 "fan": "$(cat /sys/devices/platform/cooling_fan/hwmon/hwmon?/pwm1)",\
-"load":"$(uptime)",\
-"temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\
-"volt":"$(vcgencmd measure_volts)",\
-"throttled":"$(vcgencmd get_throttled)"\
+"load":"$(uptime)",\
+"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
+"swap": "$(swapon --show=size,used --noheadings --bytes)",\
+"temp":"$(vcgencmd measure_temp)",\
+"throttled":"$(vcgencmd get_throttled)",\
+"volt":"$(vcgencmd measure_volts)"\
 }
 +
 +++
@@ -431,14 +432,16 @@ The `.json` file contains the script's output in JSON:
 ```
 $ json /tmp/getState.json
 {
-  "date": "2023-11-16T14:12:10+00:00",
-  "boot": "2023-10-15 16:23:22",
-  "powerLed": "0",
-  "load": " 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21",
-  "temp": "temp=52.5'C",
-  "freq": "frequency(48)=1800457088",
-  "volt": "volt=0.9035V",
-  "throttled": "throttled=0x0"
+  "date": "2024-09-01T12:12:16+00:00",
+  "boot": "2024-09-01 14:05:49",
+  "fan": "",
+  "freq": "frequency(48)=800191424",
+  "load": " 14:12:16 up 6 min,  3 users,  load average: 0.08, 0.17, 0.10",
+  "powerLed": "255",
+  "swap": "2147479552    0",
+  "temp": "temp=51.1'C",
+  "throttled": "throttled=0x0",
+  "volt": "volt=0.8800V"
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
