@@ -12,12 +12,13 @@ cat - <<+
 {\
 "date":"$(date -uIseconds)",\
 "boot": "$(uptime -s)",\
-"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
 "fan": "$(cat /sys/devices/platform/cooling_fan/hwmon/hwmon?/pwm1)",\
-"load":"$(uptime)",\
-"temp":"$(vcgencmd measure_temp)",\
 "freq":"$(vcgencmd measure_clock arm)",\
-"volt":"$(vcgencmd measure_volts)",\
-"throttled":"$(vcgencmd get_throttled)"\
+"load":"$(uptime)",\
+"powerLed": "$(cat /sys/class/leds/PWR/brightness)",\
+"swap": "$(swapon --show=size,used --noheadings --bytes)",\
+"temp":"$(vcgencmd measure_temp)",\
+"throttled":"$(vcgencmd get_throttled)",\
+"volt":"$(vcgencmd measure_volts)"\
 }
 +
