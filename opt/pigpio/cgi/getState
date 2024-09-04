@@ -22,3 +22,4 @@ cat - <<+
 "volt":"$(vcgencmd measure_volts)"\
 }
 +
+
