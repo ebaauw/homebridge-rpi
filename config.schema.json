@@ -112,6 +112,12 @@
                         ]
                       },
                       {
+                        "title": "Fan",
+                        "enum": [
+                          "fan"
+                        ]
+                      },
+                      {
                         "title": "Fan SHIM",
                         "enum": [
                           "fanshim"
@@ -192,7 +198,7 @@
                   },
                   "gpio": {
                     "title": "GPIO",
-                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, DHTxx Sensor, Door Bell, Garage Door Opener, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
+                    "description": "The BCM number of the GPIO pin.<br>For devices: Button, Carbon Monoxide Sensor, Contact Sensor, DHTxx Sensor, Door Bell, Fan, Garage Door Opener, Leak Sensor, Light, Motion Sensor, Rocker, Servo Motor, Smoke Sensor, Switch.",
                     "type": "integer",
                     "maximum": 31
                   },
@@ -303,6 +309,7 @@
                               "contact",
                               "dht",
                               "doorbell",
+                              "fan",
                               "garage",
                               "leak",
                               "light",
@@ -386,6 +393,7 @@
                               "carbonmonoxide",
                               "contact",
                               "doorbell",
+                              "fan",
                               "garage",
                               "leak",
                               "light",
