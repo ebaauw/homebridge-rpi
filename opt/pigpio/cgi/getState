@@ -1,6 +1,6 @@
 #!/bin/bash
 # homebridge-rpi/opt/pigpio/cgi/getState
-# Copyright © 2019-2024 Erik Baauw.  All rights reserved.
+# Copyright © 2019-2025 Erik Baauw.  All rights reserved.
 #
 # Homebridge plugin for Raspberry Pi.
 
