@@ -22,11 +22,11 @@
     "rpi": "cli/rpi.js"
   },
   "engines": {
-    "homebridge": "^1.9.0||^2.0.0-beta",
-    "node": "^22||^20||^18"
+    "homebridge": "^1.10.0||^2.0.0-beta",
+    "node": "^22||^20"
   },
   "dependencies": {
-    "homebridge-lib": "~7.1.5"
+    "homebridge-lib": "~7.1.6"
   },
   "scripts": {
     "prepare": "standard && rm -rf out && jsdoc -c jsdoc.json",
