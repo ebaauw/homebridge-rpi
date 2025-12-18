@@ -4,9 +4,9 @@ import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
 import { GpioClient } from './lib/GpioClient.js'
 import './lib/GpioClient/RgpioClient.js'
 // import './lib/GpioClient/PigpioClient.js'
-import { PigpioLedChain } from './lib/PigpioLedChain.js'
-import './lib/PigpioLedChain/Blinkt.js'
-import './lib/PigpioLedChain/P9813.js'
+import { GpioLedChain } from './lib/GpioLedChain.js'
+import './lib/GpioLedChain/Blinkt.js'
+import './lib/GpioLedChain/P9813.js'
 
 async function delay (ms = 100) {
   return new Promise((resolve, reject) => {
@@ -60,8 +60,8 @@ class Main extends CommandLineTool {
       .on('data', (data) => { this.vvdebug('recv %s', toHexString(data)) })
       .on('message', (message) => { this.debug(message) })
     this.blinkt = config.type === 'p9818'
-      ? new PigpioLedChain.P9813(this.pi, config)
-      : new PigpioLedChain.Blinkt(this.pi, config)
+      ? new GpioLedChain.P9813(this.pi, config)
+      : new GpioLedChain.Blinkt(this.pi, config)
     // this.blinkt
     //   .on('led', (id, led) => { console.log('led %d: %j', id, led) })
     process.removeAllListeners('SIGINT') // Remove existing handlers
