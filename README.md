@@ -517,7 +517,7 @@ $ rpi -H pi4 info
 When Homebridge crashes, Homebridge RPi might not properly close the `pigpiod` file
 handles.
 This can result in an `FO (104): error no handle available (-24)` error.
-Use `rpi -H xx.xx.xx.xx closeHandles` to force-close the stale handles.
+Restart `pigpiod` to force-close the stale handles.
 
 #### Check Dependencies
 If you run into Homebridge startup issues, please double-check what versions of Node.js and of Homebridge have been installed.
