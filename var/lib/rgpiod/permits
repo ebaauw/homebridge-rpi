@@ -1,0 +1,18 @@
+[files]
+homebridge-rpi=/tmp/getState.json r:\
+/proc/cpuinfo r:\
+/sys/devices/platform/cooling_fan/hwmon/hwmon*/pwm1 u:\
+/sys/class/leds/PWR/brightness u:\
+/sys/bus/usb/drivers/usb/*bind u
+
+[gpio]
+homebridge-rpi=*.*
+
+[i2c]
+homebridge-rpi=*.*
+
+[notify]
+homebridge-rpi=y
+
+[shell]
+homebridge-rpi=y
