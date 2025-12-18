@@ -1,4 +1,9 @@
-import { PigpioClient } from './lib/PigpioClient.js'
+import { toHexString } from 'homebridge-lib'
+import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
+
+import { GpioClient } from './lib/GpioClient.js'
+import './lib/GpioClient/RgpioClient.js'
+// import './lib/GpioClient/PigpioClient.js'
 import { PigpioLedChain } from './lib/PigpioLedChain.js'
 import './lib/PigpioLedChain/Blinkt.js'
 import './lib/PigpioLedChain/P9813.js'
@@ -31,16 +36,35 @@ const config = { // Blinkt!
   nLeds: 8
 }
 
-class Test {
+class Main extends CommandLineTool {
   constructor () {
-    this.pi = new PigpioClient({ host })
-    // this.pi
-    //   .on('request', (request) => { console.log('request: %j', request) })
+    super()
+    this.setOptions({ debug: true, vdebug: true, vvdebug: false })
+    this.pi = new GpioClient.Rgpio({ host })
+    // this.pi = new GpioClient.Pigpio({ host })
+    this.pi
+      .on('error', (error) => { this.warn(error) })
+      .on('connect', (hostname, port) => {
+        this.debug('connected to %s:%d', hostname, port)
+      })
+      .on('disconnect', (hostname, port) => {
+        this.debug('disconnected from %s:%d', hostname, port)
+      })
+      .on('command', (cmd, params) => {
+        this.vdebug('%s %j', this.pi.commandName(cmd), params)
+      })
+      .on('response', (cmd, result) => {
+        this.vdebug('%s => %j', this.pi.commandName(cmd), result)
+      })
+      .on('send', (data) => { this.vvdebug('send %s', toHexString(data)) })
+      .on('data', (data) => { this.vvdebug('recv %s', toHexString(data)) })
+      .on('message', (message) => { this.debug(message) })
     this.blinkt = config.type === 'p9818'
       ? new PigpioLedChain.P9813(this.pi, config)
       : new PigpioLedChain.Blinkt(this.pi, config)
     // this.blinkt
     //   .on('led', (id, led) => { console.log('led %d: %j', id, led) })
+    process.removeAllListeners('SIGINT') // Remove existing handlers
     process.on('SIGINT', async (signal) => {
       console.log('Got %s', signal)
       this.interrupted = true
@@ -107,6 +131,7 @@ class Test {
       1 + Math.sin(0.2 * Math.PI),
       1 + Math.sin(0.1 * Math.PI),
       1 + Math.sin(0.0 * Math.PI),
+      1 + Math.sin(0.0 * Math.PI),
       1 + Math.sin(0.1 * Math.PI),
       1 + Math.sin(0.2 * Math.PI),
       1 + Math.sin(0.3 * Math.PI),
@@ -150,4 +175,4 @@ class Test {
   }
 }
 
-new Test().main()
+new Main().main()
