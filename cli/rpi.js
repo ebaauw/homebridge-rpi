@@ -7,20 +7,18 @@
 
 import { createRequire } from 'node:module'
 
-import { timeout } from 'homebridge-lib'
+import { toHexString, timeout } from 'homebridge-lib'
 import { CommandLineParser } from 'hb-lib-tools/CommandLineParser'
 import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
 import { JsonFormatter } from 'hb-lib-tools/JsonFormatter'
 import { OptionParser } from 'hb-lib-tools/OptionParser'
 import { SystemInfo } from 'hb-lib-tools/SystemInfo'
 
-import { PigpioClient } from '../lib/PigpioClient.js'
+import { GpioClient } from '../lib/GpioClient.js'
 import { RpiInfo } from '../lib/RpiInfo.js'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
-
-const PI_CMD = PigpioClient.commands
 
 const { b, u } = CommandLineTool
 const { UsageError } = CommandLineParser
@@ -30,7 +28,6 @@ const usage = {
   info: `${b('info')} [${b('-hns')}]`,
   state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
-  closeHandles: `${b('closeHandles')} [${b('-h')}]`,
   led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`
 }
 
@@ -39,7 +36,6 @@ const description = {
   info: 'Get Raspberry Pi properties.',
   state: 'Get Raspberry Pi state.',
   test: 'Repeatedly get Raspberry Pi state.',
-  closeHandles: 'Force-close stale pigpiod handles.',
   led: 'Get/set/clear power LED state.'
 }
 
@@ -60,7 +56,9 @@ Parameters:
 
   ${b('-H')} ${u('hostname')}[${b(':')}${u('port')}], ${b('--host=')}${u('hostname')}[${b(':')}${u('port')}]
   Connect to Raspberry Pi at ${u('hostname')}${b(':8888')} or ${u('hostname')}${b(':')}${u('port')}.
-  Default is ${b('localhost:8888')}.
+  Default is ${b('localhost:8889')}
+  Note that by default, ${b('rpi')} connects to the ${b('rgpio')} daemon on port 8889.
+  To connect to the ${b('pigpio')} daemon, specify port ${b('8888')}.
 
 Commands:
   ${usage.info}
@@ -71,9 +69,6 @@ Commands:
 
   ${usage.test}
   ${description.test}
-
-  ${usage.closeHandles}
-  ${description.closeHandles}
 
   ${usage.led}
   ${description.led}
@@ -118,13 +113,6 @@ Parameters:
 
   ${b('-s')}, ${b('--sortKeys')}
   Sort object key/value pairs alphabetically on key.`,
-  closeHandles: `${description.closeHandles}
-
-Usage: ${b('rpi')} ${usage.closeHandles}
-
-Parameters:
-  ${b('-h')}, ${b('--help')}
-  Print this help and exit.`,
   led: `${description.led}
 
 Usage: ${b('rpi')} ${usage.led}
@@ -153,22 +141,33 @@ class Main extends CommandLineTool {
   async main () {
     try {
       this._clargs = this.parseArguments()
-      this.pi = new PigpioClient(this._clargs.options)
+      let Client
+      if (this._clargs.port === 8888) {
+        await import('../lib/GpioClient/PigpioClient.js')
+        Client = GpioClient.Pigpio
+      } else {
+        await import('../lib/GpioClient/RgpioClient.js')
+        Client = GpioClient.Rgpio
+      }
+      this.pi = new Client(this._clargs.options)
       this.pi
         .on('error', (error) => { this.warn(error) })
+        .on('warning', (error) => { this.warn(error) })
         .on('connect', (hostname, port) => {
-          this.debug('connected to pigpio at %s:%d', hostname, port)
+          this.debug('connected to %s:%d', hostname, port)
         })
         .on('disconnect', (hostname, port) => {
-          this.debug('disconnected from pigpio at %s:%d', hostname, port)
+          this.debug('disconnected from %s:%d', hostname, port)
         })
-        .on('command', (cmd, p1, p2, p3) => {
-          this.debug('command %s %d %d %j', PigpioClient.commandName(cmd), p1, p2, p3)
+        .on('command', (cmd, params) => {
+          this.vdebug('%s %j', this.pi.commandName(cmd), params)
         })
-        .on('response', (cmd, status, result) => {
-          this.debug('command %s => %d', PigpioClient.commandName(cmd), status)
-          // this.debug('command %s => %d %j', PigpioClient.commandName(cmd), status, result)
+        .on('response', (cmd, result) => {
+          this.vdebug('%s => %j', this.pi.commandName(cmd), result)
         })
+        .on('send', (data) => { this.vvdebug('send %s', toHexString(data)) })
+        .on('data', (data) => { this.vvdebug('recv %s', toHexString(data)) })
+        .on('message', (message) => { this.debug(message) })
       this.name = 'rpi ' + this._clargs.command
       this.usage = `${b('rpi')} ${usage[this._clargs.command]}`
       this.help = help[this._clargs.command]
@@ -189,15 +188,26 @@ class Main extends CommandLineTool {
     const parser = new CommandLineParser(packageJson)
     const clargs = {
       options: {
-        host: 'localhost'
-      }
+        host: process.env.LG_ADDR || process.env.PIGPIO_ADDR || 'localhost'
+      },
+      port: process.env.LG_ADDR == null && process.env.PIGPIO_ADDR != null ? 8888 : 8889
     }
     parser
       .help('h', 'help', help.rpi)
-      .flag('D', 'debug', () => { this.setOptions({ debug: true, chalk: true }) })
+      .flag('D', 'debug', () => {
+        if (this.vdebugEnabled) {
+          this.setOptions({ vvdebug: true })
+        } else if (this.debugEnabled) {
+          this.setOptions({ vdebug: true })
+        } else {
+          this.setOptions({ debug: true, chalk: true })
+        }
+      })
       .version('V', 'version')
       .option('H', 'host', (value) => {
-        OptionParser.toHost('host', value, false, true)
+        const { hostname, port } = OptionParser.toHost('host', value, false, true)
+        clargs.hostname = hostname
+        clargs.port = port
         clargs.options.host = value
       })
       .parameter('command', (value) => {
@@ -315,38 +325,6 @@ class Main extends CommandLineTool {
       }
       await timeout(5000)
     }
-  }
-
-  async closeHandles (...args) {
-    const parser = new CommandLineParser(packageJson)
-    parser
-      .help('h', 'help', this.help)
-      .parse(...args)
-    await this.pi.connect()
-    let nClosed = 0
-    for (let handle = 0; handle <= 15; handle++) {
-      try {
-        const h = await this.pi.command(PI_CMD.FC, handle)
-        if (h != null) {
-          nClosed++
-          this.debug('%s: closed file handle %d', this.pi.hostname, handle)
-        }
-      } catch (error) {
-        // ignore
-      }
-    }
-    for (let handle = 0; handle <= 20; handle++) {
-      try {
-        const h = await this.pi.command(PI_CMD.PROCD, handle)
-        if (h != null) {
-          nClosed++
-          this.debug('%s: closed proc handle %d', this.pi.hostname, handle)
-        }
-      } catch (error) {
-        // ignore
-      }
-    }
-    this.debug('%s: closed %d handles', this.pi.hostname, nClosed)
   }
 
   async led (...args) {
