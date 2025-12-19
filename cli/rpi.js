@@ -235,10 +235,16 @@ class Main extends CommandLineTool {
       this.error(error)
     }
     try {
+      await this.ledChain?.disconnect(true)
       await this.pi?.disconnect()
     } catch (error) {
       this.error(error)
     }
+  }
+
+  async destroy () {
+    await this.ledChain?.disconnect(true)
+    await this.pi?.disconnect()
   }
 
   parseArguments () {
@@ -284,11 +290,6 @@ class Main extends CommandLineTool {
       .remaining((list) => { clargs.args = list })
       .parse()
     return clargs
-  }
-
-  async destroy () {
-    await this.ledChain?.disconnect(true)
-    await this.pi?.disconnect()
   }
 
   async _getInfo () {
@@ -368,18 +369,6 @@ class Main extends CommandLineTool {
     const state = await this._getState(!info.supportsPowerLed, !info.supportsFan)
     const json = this.jsonFormatter.stringify(state)
     this.print(json)
-  }
-
-  async exit (signal) {
-    this.log('got %s - exiting...', signal)
-    try {
-      if (this.pi != null) {
-        await this.pi.disconnect()
-      }
-    } catch (error) {
-      this.error(error)
-    }
-    process.exit(0)
   }
 
   async test (...args) {
@@ -480,9 +469,15 @@ class Main extends CommandLineTool {
     await import('../lib/GpioLedChain/Blinkt.js')
     this.ledChain = new GpioLedChain.Blinkt(this.pi, clargs.config)
     await this.ledChain.init(true)
-    if (clargs.mode !== 'off') {
-      await this.ledChain[clargs.mode](clargs.brightness)
+    if (clargs.mode === 'off') {
+      return
     }
+    process.removeAllListeners('SIGINT')
+    process.on('SIGINT', () => {
+      this.log('got SIGINT: stopping ledchain %s', clargs.mode)
+      this.ledChain.stop()
+    })
+    await this.ledChain[clargs.mode](clargs.brightness)
   }
 }
 
