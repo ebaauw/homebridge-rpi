@@ -26,6 +26,7 @@ const usage = {
   info: `${b('info')} [${b('-hns')}]`,
   state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
+  eventlog: `${b('eventlog')} [${b('-hns')}]`,
   led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`,
   ledchain: `${b('ledchain')} [${b('-h')}] [${b('-B')}|${b('-P')}] [${b('-c')} ${u('gpio')} ${b('-d')} ${u('gpio')} ${b('-n')} ${u('nLeds')}] [${b('-b')} ${u('brightness')}] [${u('mode')}]`
 }
@@ -35,6 +36,7 @@ const description = {
   info: 'Get Raspberry Pi properties.',
   state: 'Get Raspberry Pi state.',
   test: 'Repeatedly get Raspberry Pi state.',
+  eventlog: 'Monitor GPIO state changes.',
   led: 'Get/set/clear power LED state.',
   ledchain: 'Control Blinkt! or P9813 LED chain.'
 }
@@ -129,6 +131,9 @@ Parameters:
 
   ${b('-s')}, ${b('--sortKeys')}
   Sort object key/value pairs alphabetically on key.`,
+  eventlog: `${description.eventlog}
+
+Usage: ${b('rpi')} ${usage.eventlog}`,
   led: `${description.led}
 
 Usage: ${b('rpi')} ${usage.led}
@@ -385,6 +390,21 @@ class Main extends CommandLineTool {
     }
   }
 
+  async eventlog (...args) {
+    await
+    this._parseCommandArgs(...args)
+    this.pi.on('notification', (payload) => {
+      if (this.tick0 == null) {
+        this.tick0 = payload.tick
+      }
+      this.print(
+        '%d: %s', ((payload.tick - this.tick0) / 1000) >>> 0, this.pi.vmap(payload.map)
+      )
+    })
+    await this.pi.listen()
+    await new Promise(() => {})
+  }
+
   async led (...args) {
     const { RpiInfo } = await import('../lib/RpiInfo.js')
     const clargs = { options: {} }
@@ -467,9 +487,7 @@ class Main extends CommandLineTool {
       .parse(...args)
 
     // Check if RPi model supports specified GPIOs.
-    const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
-    const { SystemInfo } = await import('hb-lib-tools/SystemInfo')
-    const { gpioMask, model } = SystemInfo.parseRpiCpuInfo(cpuInfo)
+    const { gpioMask, model } = await this._getInfo()
     if (((1 << clargs.config.gpioClock) & gpioMask) === 0) {
       throw new UsageError(
         `clock: GPIO ${clargs.config.gpioClock}: not available on Raspberry Pi ${model}`
