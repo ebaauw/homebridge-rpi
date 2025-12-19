@@ -12,10 +12,8 @@ import { CommandLineParser } from 'hb-lib-tools/CommandLineParser'
 import { CommandLineTool } from 'hb-lib-tools/CommandLineTool'
 import { JsonFormatter } from 'hb-lib-tools/JsonFormatter'
 import { OptionParser } from 'hb-lib-tools/OptionParser'
-import { SystemInfo } from 'hb-lib-tools/SystemInfo'
 
 import { GpioClient } from '../lib/GpioClient.js'
-import { RpiInfo } from '../lib/RpiInfo.js'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
@@ -293,6 +291,7 @@ class Main extends CommandLineTool {
   }
 
   async _getInfo () {
+    const { SystemInfo } = await import('hb-lib-tools/SystemInfo')
     let info
     if (['localhost', '127.0.0.1'].includes(this._clargs.options.host)) {
       const systemInfo = new SystemInfo()
@@ -318,6 +317,7 @@ class Main extends CommandLineTool {
   }
 
   async _getState (noPowerLed, noFan) {
+    const { RpiInfo } = await import('../lib/RpiInfo.js')
     let state
     if (['localhost', '127.0.0.1'].includes(this._clargs.options.host)) {
       if (this.rpiInfo == null) {
@@ -358,7 +358,6 @@ class Main extends CommandLineTool {
   async info (...args) {
     this._parseCommandArgs(...args)
     const info = await this._getInfo()
-    info.state = await this._getState(!info.supportsPowerLed, !info.supportsFan)
     const json = this.jsonFormatter.stringify(info)
     this.print(json)
   }
@@ -387,6 +386,7 @@ class Main extends CommandLineTool {
   }
 
   async led (...args) {
+    const { RpiInfo } = await import('../lib/RpiInfo.js')
     const clargs = { options: {} }
     const parser = new CommandLineParser(packageJson)
     parser
@@ -419,7 +419,7 @@ class Main extends CommandLineTool {
   async ledchain (...args) {
     const clargs = {
       mode: 'cylon',
-      type: 'blinkt',
+      type: 'Blinkt',
       config: {
         gpioClock: 24,
         gpioData: 23,
@@ -431,7 +431,7 @@ class Main extends CommandLineTool {
     parser
       .help('h', 'help', this.help)
       .flag('B', 'blinkt', () => {
-        clargs.type = 'blinkt'
+        clargs.type = 'Blinkt'
         clargs.config = {
           gpioClock: 24,
           gpioData: 23,
@@ -439,7 +439,7 @@ class Main extends CommandLineTool {
         }
       })
       .flag('P', 'p9813', () => {
-        clargs.type = 'p9813'
+        clargs.type = 'P9813'
         clargs.config = {
           gpioClock: 10,
           gpioData: 11,
@@ -447,10 +447,10 @@ class Main extends CommandLineTool {
         }
       })
       .option('c', 'gpioClock', (value) => {
-        clargs.config.gpioClock = OptionParser.toInt('gpioClock', value, 0, 32)
+        clargs.config.gpioClock = OptionParser.toInt('clock', value, 0, 31)
       })
       .option('d', 'gpioData', (value) => {
-        clargs.config.gpioData = OptionParser.toInt('gpioData', value, 0, 32)
+        clargs.config.gpioData = OptionParser.toInt('data', value, 0, 31)
       })
       .option('n', 'nLeds', (value) => {
         clargs.config.nLeds = OptionParser.toInt('nLeds', value, 1, 1024)
@@ -465,9 +465,29 @@ class Main extends CommandLineTool {
         clargs.mode = value
       })
       .parse(...args)
+
+    // Check if RPi model supports specified GPIOs.
+    const cpuInfo = await this.pi.readFile('/proc/cpuinfo')
+    const { SystemInfo } = await import('hb-lib-tools/SystemInfo')
+    const { gpioMask, model } = SystemInfo.parseRpiCpuInfo(cpuInfo)
+    if (((1 << clargs.config.gpioClock) & gpioMask) === 0) {
+      throw new UsageError(
+        `clock: GPIO ${clargs.config.gpioClock}: not available on Raspberry Pi ${model}`
+      )
+    }
+    if (((1 << clargs.config.gpioClock) & gpioMask) === 0) {
+      throw new UsageError(
+        `data: GPIO ${clargs.config.gpioClock}: not available on Raspberry Pi ${model}`
+      )
+    }
+
     const { GpioLedChain } = await import('../lib/GpioLedChain.js')
-    await import('../lib/GpioLedChain/Blinkt.js')
-    this.ledChain = new GpioLedChain.Blinkt(this.pi, clargs.config)
+    await import(`../lib/GpioLedChain/${clargs.type}.js`)
+    this.ledChain = new GpioLedChain[clargs.type](this.pi, clargs.config)
+    this.ledChain
+      .on('led', (id, led) => {
+        this.vdebug('led %d: %j', id, led)
+      })
     await this.ledChain.init(true)
     if (clargs.mode === 'off') {
       return
