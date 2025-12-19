@@ -24,11 +24,12 @@ const { b, u } = CommandLineTool
 const { UsageError } = CommandLineParser
 
 const usage = {
-  rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] ${u('command')} [${u('argument')} ...]`,
+  rpi: `${b('rpi')} [${b('-hDV')}] [${b('-H')} ${u('hostname')}[${b(':')}${u('port')}]]] [${b('-U')} ${u('user')}] [${b('-P')} ${u('password')}] ${u('command')} [${u('argument')} ...]`,
   info: `${b('info')} [${b('-hns')}]`,
   state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
-  led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`
+  led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`,
+  ledchain: `${b('ledchain')} [${b('-h')}] [${b('-B')}|${b('-P')}] [${b('-c')} ${u('gpio')} ${b('-d')} ${u('gpio')} ${b('-n')} ${u('nLeds')}] [${b('-b')} ${u('brightness')}] [${u('mode')}]`
 }
 
 const description = {
@@ -36,7 +37,8 @@ const description = {
   info: 'Get Raspberry Pi properties.',
   state: 'Get Raspberry Pi state.',
   test: 'Repeatedly get Raspberry Pi state.',
-  led: 'Get/set/clear power LED state.'
+  led: 'Get/set/clear power LED state.',
+  ledchain: 'Control Blinkt! or P9813 LED chain.'
 }
 
 const help = {
@@ -55,10 +57,23 @@ Parameters:
   Print version and exit.
 
   ${b('-H')} ${u('hostname')}[${b(':')}${u('port')}], ${b('--host=')}${u('hostname')}[${b(':')}${u('port')}]
-  Connect to Raspberry Pi at ${u('hostname')}${b(':8888')} or ${u('hostname')}${b(':')}${u('port')}.
-  Default is ${b('localhost:8889')}
-  Note that by default, ${b('rpi')} connects to the ${b('rgpio')} daemon on port 8889.
-  To connect to the ${b('pigpio')} daemon, specify port ${b('8888')}.
+  Connect to Raspberry Pi at ${u('hostname')}${b(':')}${u('port')}.
+  Default is ${b('localhost:8889')}.  If only a hostname specified, port ${b('8889')} is used.
+  Note that the port indicates which GPIO daemon to connect to:
+  - Use ${b('8889')} for the ${b('rgpio')} daemon,
+  - Use ${b('8888')} for the ${b('pigpio')} daemon.
+  The hostname and port can also be set through the environment variables
+  ${b('LG_ADDR')} (for ${b('rgpio')}) or ${b('PIGPIO_ADDR')} (for ${b('pigpio')}).
+
+  ${b('-U')} ${u('user')}, ${b('--user=')}${u('user')}
+  Login to the ${b('rgpio')} daemon under ${u('user')}.
+  Default is ${b('homebridge-rpi')}.
+  The user can also be set through the environment variable ${b('LG_USER')}.
+
+  ${b('-P')} ${u('password')}, ${b('--password=')}${u('password')}
+  Authenticate to the ${b('rgpio')} daemon with ${u('password')}.
+  Default is ${b('')} (empty).
+  The password can also be set tgrough the environment variable ${b('LG_PASS')}.
 
 Commands:
   ${usage.info}
@@ -72,6 +87,9 @@ Commands:
 
   ${usage.led}
   ${description.led}
+
+  ${usage.ledchain}
+  ${description.ledchain}
 
 For more help, issue: ${b('rpi')} ${u('command')} ${b('-h')}`,
   info: `${description.info}
@@ -125,7 +143,46 @@ Parameters:
   Turn power LED on.
 
   ${b('off')}
-  Turn power LED off.`
+  Turn power LED off.`,
+  ledchain: `${description.ledchain}
+
+Usage: ${b('rpi')} ${usage.ledchain}
+
+Parameters:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.
+
+  ${b('-B')}, ${b('--blinkt')}
+  Control Pimoroni Blinkt! LED chain (default).
+  Sets clock to GPIO 24, data to GPIO 23, and number of LEDs to 8.
+  You can change these with the ${b('-c')}, ${b('-d')}, and ${b('-n')} options.
+  The Pimoroni FanShim uses GPIO 14 for clock, GPIO 15 for data, and has 1 LED.
+
+  ${b('-P')}, ${b('--p9813')}
+  Use P9813-based LED chain.
+  Sets clock to GPIO 10, data to GPIO 11, and number of LEDs to 2.
+  You can change these with the ${b('-c')}, ${b('-d')}, and ${b('-n')} options.
+
+  ${b('-c')} ${u('gpio')}, ${b('--clock=')}${u('gpio')}
+  GPIO pin for LED chain clock signal.
+
+  ${b('-d')} ${u('gpio')}, ${b('--data=')}${u('gpio')}
+  GPIO pin for LED chain data signal.
+
+  ${b('-n')} ${u('nLeds')}, ${b('--nLeds=')}${u('nLeds')}
+  Number of LEDs in the LED chain.
+
+  ${b('-b')} ${u('brightness')}, ${b('--brightness=')}${u('brightness')}
+  Set brightness between 0 and 255 (default: 255).
+
+  ${b('colorloop')}
+  Start color loop.
+
+  ${b('cylon')}
+  Start Cylon eye.
+
+  ${b('off')}
+  Turn off all LEDs.`
 }
 
 function toHex (n) {
@@ -145,6 +202,8 @@ class Main extends CommandLineTool {
       if (this._clargs.port === 8888) {
         await import('../lib/GpioClient/PigpioClient.js')
         Client = GpioClient.Pigpio
+        delete this._clargs.options.user
+        delete this._clargs.options.password
       } else {
         await import('../lib/GpioClient/RgpioClient.js')
         Client = GpioClient.Rgpio
@@ -176,9 +235,7 @@ class Main extends CommandLineTool {
       this.error(error)
     }
     try {
-      if (this.pi != null) {
-        await this.pi.disconnect()
-      }
+      await this.pi?.disconnect()
     } catch (error) {
       this.error(error)
     }
@@ -188,7 +245,9 @@ class Main extends CommandLineTool {
     const parser = new CommandLineParser(packageJson)
     const clargs = {
       options: {
-        host: process.env.LG_ADDR || process.env.PIGPIO_ADDR || 'localhost'
+        host: process.env.LG_ADDR || process.env.PIGPIO_ADDR || 'localhost',
+        user: process.env.LG_USER || 'homebridge-rpi',
+        password: process.env.LG_PASS || ''
       },
       port: process.env.LG_ADDR == null && process.env.PIGPIO_ADDR != null ? 8888 : 8889
     }
@@ -210,6 +269,12 @@ class Main extends CommandLineTool {
         clargs.port = port
         clargs.options.host = value
       })
+      .option('U', 'user', (value) => {
+        clargs.options.user = OptionParser.toString('user', value, true)
+      })
+      .option('P', 'password', (value) => {
+        clargs.options.password = OptionParser.toString('password', value, true)
+      })
       .parameter('command', (value) => {
         if (usage[value] == null || typeof this[value] !== 'function') {
           throw new UsageError(`${value}: unknown command`)
@@ -219,6 +284,11 @@ class Main extends CommandLineTool {
       .remaining((list) => { clargs.args = list })
       .parse()
     return clargs
+  }
+
+  async destroy () {
+    await this.ledChain?.disconnect(true)
+    await this.pi?.disconnect()
   }
 
   async _getInfo () {
@@ -355,6 +425,64 @@ class Main extends CommandLineTool {
     }
     const { powerLed } = await this._getState(false, true)
     this.print(powerLed ? 'on' : 'off')
+  }
+
+  async ledchain (...args) {
+    const clargs = {
+      mode: 'cylon',
+      type: 'blinkt',
+      config: {
+        gpioClock: 24,
+        gpioData: 23,
+        nLeds: 8
+      },
+      brightness: 255
+    }
+    const parser = new CommandLineParser(packageJson)
+    parser
+      .help('h', 'help', this.help)
+      .flag('B', 'blinkt', () => {
+        clargs.type = 'blinkt'
+        clargs.config = {
+          gpioClock: 24,
+          gpioData: 23,
+          nLeds: 8
+        }
+      })
+      .flag('P', 'p9813', () => {
+        clargs.type = 'p9813'
+        clargs.config = {
+          gpioClock: 10,
+          gpioData: 11,
+          nLeds: 2
+        }
+      })
+      .option('c', 'gpioClock', (value) => {
+        clargs.config.gpioClock = OptionParser.toInt('gpioClock', value, 0, 32)
+      })
+      .option('d', 'gpioData', (value) => {
+        clargs.config.gpioData = OptionParser.toInt('gpioData', value, 0, 32)
+      })
+      .option('n', 'nLeds', (value) => {
+        clargs.config.nLeds = OptionParser.toInt('nLeds', value, 1, 1024)
+      })
+      .option('b', 'brightness', (value) => {
+        clargs.brightness = OptionParser.toInt('brightness', value, 0, 255)
+      })
+      .parameter('mode', (value) => {
+        if (!['colorloop', 'cylon', 'off'].includes(value)) {
+          throw new UsageError(`${value}: unknown mode`)
+        }
+        clargs.mode = value
+      })
+      .parse(...args)
+    const { GpioLedChain } = await import('../lib/GpioLedChain.js')
+    await import('../lib/GpioLedChain/Blinkt.js')
+    this.ledChain = new GpioLedChain.Blinkt(this.pi, clargs.config)
+    await this.ledChain.init(true)
+    if (clargs.mode !== 'off') {
+      await this.ledChain[clargs.mode](clargs.brightness)
+    }
   }
 }
 
