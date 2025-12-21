@@ -26,7 +26,7 @@ const usage = {
   info: `${b('info')} [${b('-hns')}]`,
   state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
-  eventlog: `${b('eventlog')} [${b('-hns')}]`,
+  eventlog: `${b('eventlog')} [${b('-h')}] [${u('gpio')}...]`,
   led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`,
   ledchain: `${b('ledchain')} [${b('-h')}] [${b('-B')}|${b('-P')}] [${b('-c')} ${u('gpio')} ${b('-d')} ${u('gpio')} ${b('-n')} ${u('nLeds')}] [${b('-b')} ${u('brightness')}] [${u('mode')}]`
 }
@@ -133,7 +133,15 @@ Parameters:
   Sort object key/value pairs alphabetically on key.`,
   eventlog: `${description.eventlog}
 
-Usage: ${b('rpi')} ${usage.eventlog}`,
+Usage: ${b('rpi')} ${usage.eventlog}
+
+Paramerers:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.
+
+  ${u('gpio')}
+  Log events for GPIO ${u('gpio')}.
+  Default: all user GPIOs on the Rapberry Pi model.`,
   led: `${description.led}
 
 Usage: ${b('rpi')} ${usage.led}
@@ -391,17 +399,36 @@ class Main extends CommandLineTool {
   }
 
   async eventlog (...args) {
-    await
-    this._parseCommandArgs(...args)
-    this.pi.on('notification', (payload) => {
-      if (this.tick0 == null) {
-        this.tick0 = payload.tick
-      }
-      this.print(
-        '%d: %s', ((payload.tick - this.tick0) / 1000) >>> 0, this.pi.vmap(payload.map)
-      )
-    })
-    await this.pi.listen()
+    const { gpioMask, model } = await this._getInfo()
+    let mask = 0
+    const parser = new CommandLineParser(packageJson)
+    parser
+      .help('h', 'help', this.help)
+      .remaining((list) => {
+        this.debug(list)
+        for (const i in list) {
+          const gpio = OptionParser.toInt(`gpio[${i}]`, list[i])
+          const bit = 1 << gpio
+          this.debug('gpio %d, bit %d', gpio, bit)
+          if ((bit & gpioMask) === 0) {
+            throw new UsageError(`gpio[${i}]: GPIO ${gpio}: not available on Raspberry Pi ${model}`)
+          }
+          mask |= bit
+          this.pi.on('gpio' + gpio, (payload) => {
+            this.print('gpio %d: %s', gpio, payload.value ? 'high' : 'low')
+          })
+        }
+      })
+      .parse(...args)
+    this.pi.on('listen', (mask) => { this.debug('listening for %s', this.pi.vmap(mask)) })
+    if (mask === 0) {
+      this.pi.on('notification', (payload) => {
+        this.print(
+          '%s (0x%s, tick: %d)', this.pi.vmap(payload.map), toHexString(payload.map, 8), payload.tick >>> 0
+        )
+      })
+    }
+    await this.pi.listen(mask === 0 ? gpioMask : mask)
     await new Promise(() => {})
   }
 
