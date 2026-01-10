@@ -26,9 +26,19 @@
           "properties": {
             "host": {
               "title": "Host",
-              "description": "IP address or hostname and port of the Pi's pigpiod server.  E.g.: 'localhost:8888'.",
+              "description": "IP address or hostname and port of the Pi's GPIO daemon.  E.g.: 'localhost:8889'.  Default port is 8889 for rgpiod; use port 8888 for pigpiod.",
               "type": "string",
               "required": true
+            },
+            "user": {
+              "title": "User",
+              "description": "Username for rgpiod authentication.  Default: 'homebridge-rpi'.",
+              "type": "string"
+            },
+            "password": {
+              "title": "Password",
+              "description": "Password for rgpiod authentication.  Default: ''.",
+              "type": "string"
             },
             "name": {
               "title": "Name",
