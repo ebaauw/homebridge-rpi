@@ -3,7 +3,7 @@
   "rescurseDepth": 10,
   "source": {
     "include": [
-      "README.md", "index.js", "lib", "lib/GpioClient", "lib/PigpioLedChain"
+      "README.md", "index.js", "lib", "lib/GpioClient", "lib/GpioLedChain"
     ]
   },
   "templates": {
