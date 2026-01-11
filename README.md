@@ -21,34 +21,42 @@ Copyright © 2019-2026 Erik Baauw. All rights reserved.
 This [Homebridge](https://github.com/homebridge/homebridge) plugin exposes to HomeKit
 Raspberry Pi computers and devices connected to the Pi's GPIO-pins.
 It provides the following features:
-- Monitoring from HomeKit of the Pi's CPU: temperature, frequency, voltage, and throttling, including:
-  - [Eve](https://www.evehome.com/en/eve-app) history for the temperature;
-  - Apple push notifications for throttling or under voltage;
-- Monitoring and controlling the Raspberry Pi power LED (on select models);
-- Monitoring the Raspberry Pi fan speed (on select models);
-- Controlling power to the Raspberry Pi USB ports (on select models).
-- Monitoring from HomeKit of input devices connected to the Pi's GPIO pins, including:
+- Monitoring and/or controlling from HomeKit of a Raspberry Pi:
+  - Monitoring CPU: temperature, frequency, voltage, and throttling (incl.
+    [Eve](https://www.evehome.com/en/eve-app) history for the temperature and
+    Apple push notifications for throttling or under voltage);
+  - Monitoring Raspberry Pi OS: last boot, load, and swap usage (incl.
+    Apple push notifications for swap usage);
+  - Monitoring and controlling the Raspberry Pi power LED (on select models);
+  - Monitoring the Raspberry Pi fan speed (on select models);
+  - Controlling the power to the Raspberry Pi USB ports (on select models).
+- Monitoring from HomeKit of input devices connected to the Raspberry Pi's GPIO pins, including:
   - Buttons;
+  - Carbon Monoxide sensors;
   - Contact sensors (incl. Eve history);
   - DHTxx temperature/humidity sensors;
   - Doorbells
-  - Motion sensors (incl. Eve history);
   - Leak sensors;
+  - Motion sensors (incl. Eve history);
+  - Rocker switches;
   - Smoke sensors.
-- Monitoring and controlling from HomeKit output devices connected to the Pi's GPIO pins, including:
+- Monitoring and controlling from HomeKit output devices connected to the Raspberry Pi's GPIO pins, including:
   - Relays, LEDs, Fans, etc, exposed as _Switch_ (incl. Eve history);
   - PWM Dimmable LEDs, exposed as _Lightbulb_;
-  - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and
-_Target Tilt Angle_;
+  - PWM controlled Fans;
+  - Servo motors, exposed as _Switch_, with _Current Tilt Angle_ and _Target Tilt Angle_;
+  - Locks;
+  - Garage doors;
 - Controlling from HomeKit of multi-coloured LEDs of a Pimoroni
 [Blinkt!](https://shop.pimoroni.com/products/blinkt) or
-[Fan SHIM](https://shop.pimoroni.com/products/fan-shim), installed in the Pi;
+[Fan SHIM](https://shop.pimoroni.com/products/fan-shim) installed in the Raspberry Pi;
 - Controlling from HomeKit of P8913-based chainable RGB LEDs, like the [Grove Chainable LED v2](https://github.com/Seeed-Studio/Grove_Chainable_RGB_LED).
 
 See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) for details.
 
 Unlike most other Raspberry Pi plugins, Homebridge RPi runs on any regular
-Homebridge setup, connecting to the Pi's `pigpiod` daemon over the network.
+Homebridge setup, connecting to the Pi's `rgpiod` or `pigpiod` daemon over the network.
+See the [GPIO Access](https://github.com/ebaauw/homebridge-rpi/wiki/GPIO-Access) in the Wiki for details.
 In particular, Homebridge RPi:
 - Exposes multiple Raspberry Pi computers from one Homebridge instance;
 - Does _not_ need to run on a Raspberry Pi;
