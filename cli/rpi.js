@@ -405,7 +405,6 @@ class Main extends CommandLineTool {
     parser
       .help('h', 'help', this.help)
       .remaining((list) => {
-        this.debug(list)
         for (const i in list) {
           const gpio = OptionParser.toInt(`gpio[${i}]`, list[i])
           const bit = 1 << gpio
