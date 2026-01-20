@@ -26,8 +26,8 @@ const usage = {
   info: `${b('info')} [${b('-hns')}]`,
   state: `${b('state')} [${b('-hns')}]`,
   test: `${b('test')} [${b('-hns')}]`,
-  eventlog: `${b('eventlog')} [${b('-h')}] [${u('gpio')}...]`,
   led: `${b('led')} [${b('-h')}] [${b('on')}|${b('off')}]`,
+  eventlog: `${b('eventlog')} [${b('-h')}] [${u('gpio')}...]`,
   ledchain: `${b('ledchain')} [${b('-h')}] [${b('-B')}|${b('-P')}] [${b('-c')} ${u('gpio')} ${b('-d')} ${u('gpio')} ${b('-n')} ${u('nLeds')}] [${b('-b')} ${u('brightness')}] [${u('mode')}]`
 }
 
@@ -36,8 +36,8 @@ const description = {
   info: 'Get Raspberry Pi properties.',
   state: 'Get Raspberry Pi state.',
   test: 'Repeatedly get Raspberry Pi state.',
-  eventlog: 'Monitor GPIO state changes.',
   led: 'Get/set/clear power LED state.',
+  eventlog: 'Monitor GPIO state changes.',
   ledchain: 'Control Blinkt! or P9813 LED chain.'
 }
 
@@ -88,6 +88,9 @@ Commands:
   ${usage.led}
   ${description.led}
 
+  ${usage.eventlog}
+  ${description.eventlog}
+
   ${usage.ledchain}
   ${description.ledchain}
 
@@ -131,17 +134,6 @@ Parameters:
 
   ${b('-s')}, ${b('--sortKeys')}
   Sort object key/value pairs alphabetically on key.`,
-  eventlog: `${description.eventlog}
-
-Usage: ${b('rpi')} ${usage.eventlog}
-
-Paramerers:
-  ${b('-h')}, ${b('--help')}
-  Print this help and exit.
-
-  ${u('gpio')}
-  Log events for GPIO ${u('gpio')}.
-  Default: all user GPIOs on the Rapberry Pi model.`,
   led: `${description.led}
 
 Usage: ${b('rpi')} ${usage.led}
@@ -155,6 +147,17 @@ Parameters:
 
   ${b('off')}
   Turn power LED off.`,
+  eventlog: `${description.eventlog}
+
+Usage: ${b('rpi')} ${usage.eventlog}
+
+Paramerers:
+  ${b('-h')}, ${b('--help')}
+  Print this help and exit.
+
+  ${u('gpio')}
+  Log events for GPIO ${u('gpio')}.
+  Default: all user GPIOs on the Rapberry Pi model.`,
   ledchain: `${description.ledchain}
 
 Usage: ${b('rpi')} ${usage.ledchain}
@@ -398,6 +401,37 @@ class Main extends CommandLineTool {
     }
   }
 
+  async led (...args) {
+    const { RpiInfo } = await import('../lib/RpiInfo.js')
+    const clargs = { options: {} }
+    const parser = new CommandLineParser(packageJson)
+    parser
+      .help('h', 'help', this.help)
+      .remaining((value) => {
+        if (value.length > 1) {
+          throw new UsageError('too many parameters')
+        }
+        if (value.length === 1) {
+          if (value[0] !== 'on' && value[0] !== 'off') {
+            throw new UsageError(`${value[0]}: unknown state`)
+          }
+          clargs.options.on = value[0] === 'on'
+        }
+      })
+      .parse(...args)
+    const info = await this._getInfo()
+    if (!info.supportsPowerLed) {
+      throw new Error(
+        `${this._clargs.options.host}: Raspberry Pi ${info.model}: no power LED support`
+      )
+    }
+    if (clargs.options.on != null) {
+      await this.pi.writeFile(RpiInfo.powerLed, clargs.options.on ? '1' : '0')
+    }
+    const { powerLed } = await this._getState(false, true)
+    this.print(powerLed ? 'on' : 'off')
+  }
+
   async eventlog (...args) {
     const { gpioMask, model } = await this._getInfo()
     let mask = 0
@@ -429,37 +463,6 @@ class Main extends CommandLineTool {
     }
     await this.pi.listen(mask === 0 ? gpioMask : mask)
     await new Promise(() => {})
-  }
-
-  async led (...args) {
-    const { RpiInfo } = await import('../lib/RpiInfo.js')
-    const clargs = { options: {} }
-    const parser = new CommandLineParser(packageJson)
-    parser
-      .help('h', 'help', this.help)
-      .remaining((value) => {
-        if (value.length > 1) {
-          throw new UsageError('too many parameters')
-        }
-        if (value.length === 1) {
-          if (value[0] !== 'on' && value[0] !== 'off') {
-            throw new UsageError(`${value[0]}: unknown state`)
-          }
-          clargs.options.on = value[0] === 'on'
-        }
-      })
-      .parse(...args)
-    const info = await this._getInfo()
-    if (!info.supportsPowerLed) {
-      throw new Error(
-        `${this._clargs.options.host}: Raspberry Pi ${info.model}: no power LED support`
-      )
-    }
-    if (clargs.options.on != null) {
-      await this.pi.writeFile(RpiInfo.powerLed, clargs.options.on ? '1' : '0')
-    }
-    const { powerLed } = await this._getState(false, true)
-    this.print(powerLed ? 'on' : 'off')
   }
 
   async ledchain (...args) {
