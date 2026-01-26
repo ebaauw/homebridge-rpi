@@ -26,6 +26,7 @@
     "node": "^24||^22||^20"
   },
   "dependencies": {
+    "hb-rpi-tools": "~1.0.0",
     "homebridge-lib": "~7.3.0"
   },
   "scripts": {
