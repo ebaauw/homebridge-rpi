@@ -56,7 +56,7 @@ See the [Wiki](https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices) 
 
 Unlike most other Raspberry Pi plugins, Homebridge RPi runs on any regular
 Homebridge setup, connecting to the Pi's `rgpiod` or `pigpiod` daemon over the network.
-See the [GPIO Access](https://github.com/ebaauw/homebridge-rpi/wiki/GPIO-Access) in the Wiki for details.
+See [GPIO Access](https://github.com/ebaauw/homebridge-rpi/wiki/GPIO-Access) in the Wiki for details.
 In particular, Homebridge RPi:
 - Exposes multiple Raspberry Pi computers from one Homebridge instance;
 - Does _not_ need to run on a Raspberry Pi;
@@ -64,23 +64,14 @@ In particular, Homebridge RPi:
 - Does _not_ require `root` privilege.
 
 ### Prerequisites
-Homebridge RPi connects (locally or remotely) to the
-[`pigpiod`](http://abyz.me.uk/rpi/pigpio/pigpiod.html) daemon
-on the Raspberry Pi.
-It uses the [Socket Interface](http://abyz.me.uk/rpi/pigpio/sif.html),
-just as the [`pigs`](http://abyz.me.uk/rpi/pigpio/pigs.html) command.
-This daemon is part of the [`pigpio`](https://github.com/joan2937/pigpio)
-library, which is included in Raspberry Pi OS.
-While this daemon comes with Raspberry Pi OS, it needs to be enabled and
-configured for use by Homebridge RPi, see [**Installation**](#installation).
-
-Note that `pigpiod` currently doesn't support the Raspberry Pi 5.
-Consequently, Homebridge RPi cannot support GPIO devices on a Raspberry Pi 5 and
-cannot connect to a remote Raspberry Pi 5.
+On each Raspnberry Pi, either the [`rgpiod`](https://abyz.me.uk/lg/rgpiod.html) or the
+[`pigpiod`](http://abyz.me.uk/rpi/pigpio/pigpiod.html) daemon must be installed and configured.
+See [GPIO Access](https://github.com/ebaauw/homebridge-rpi/wiki/GPIO-Access)
+in the Wiki for details.
 
 If you run Homebridge in a container on the Raspberry Pi, let
-Homebridge RPi connect remotely to (the `pigpiod` daemon running on) the host.
-Do _not_ try to run `pigpiod` in the container.
+Homebridge RPi connect remotely to the `rgpiod` or `pigpiod` daemon running on the host.
+Do _not_ try to run these daemons in the container.
 
 You need a server to run Homebridge.
 This can be anything running [Node.js](https://nodejs.org): from a Raspberry Pi, a NAS system, or an always-on PC running Linux, macOS, or Windows.
@@ -89,14 +80,15 @@ See the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki) for det
 To interact with HomeKit, you need Siri or a HomeKit app on an iPhone, Apple Watch, iPad, iPod Touch, or Apple TV (4th generation or later).
 I recommend to use the latest released versions of iOS, watchOS, and tvOS.  
 Please note that Siri and even Apple's [Home](https://support.apple.com/en-us/HT204893) app still provide only limited HomeKit support.
-To use the full features of Homebridge RPi, you might want to check out some other HomeKit apps, like the [Eve](https://www.evehome.com/en/eve-app) app (free) or Matthias Hochgatterer's [Home+](https://hochgatterer.me/home/) app (paid).
+To use the full features of Homebridge RPi, you might want to check out some other HomeKit apps, like the [Eve](https://www.evehome.com/en/eve-app) app (free)
+or Matthias Hochgatterer's [Home+](https://hochgatterer.me/home/) app (paid).
 
 As HomeKit uses Bonjour to discover Homebridge, the server running Homebridge must be on the same subnet as your iDevices running HomeKit.
 For remote access and for HomeKit automations, you need to setup an Apple TV (4th generation or later), HomePod, or iPad as [home hub](https://support.apple.com/en-us/HT207057).
 
 ### Command-Line Tool
 Homebridge RPi includes a command-line tool, `rpi`,
-to interact with the `pigpiod` daemon from the command line.
+to interact with the `rgpiod` or `pigpiod` daemon from the command line.
 It takes a `-h` or `--help` argument to provide a brief overview of
 its functionality and command-line arguments.
 
