@@ -23,12 +23,12 @@
     "rpi": "cli/rpi.js"
   },
   "engines": {
-    "homebridge": "^1.11.1||^2.0.0-beta",
+    "homebridge": "^1.11.2||^2.0.0-beta",
     "node": "^24||^22||^20"
   },
   "dependencies": {
-    "hb-rpi-tools": "~0.0.3",
-    "homebridge-lib": "~7.3.0"
+    "hb-rpi-tools": "~0.0.4",
+    "homebridge-lib": "~7.3.1"
   },
   "scripts": {
     "prepare": "standard",
