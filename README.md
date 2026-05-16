@@ -489,8 +489,8 @@ $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /sys/class/leds/PWR/brightness w
 +
 ```
-For DS18B20 sensors, add one `/sys/bus/w1/devices/<sensorId>/w1_slave r` line
-for each configured sensor.
+For DS18B20 sensors, dynamically discover sensors from `/sys/bus/w1/devices/<sensorId>/w1_slave`.
+```
 To check that the files can be read, issue `fo` to open the file for reading:
 ```
 $ pigs fo /tmp/getState.json 1
@@ -501,7 +501,7 @@ Note the returned file descriptor, in this case `0`.
 Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
 ```
 $ pigs -a fr 0 1024
-268 {"date":"2023-11-16T14:12:10+00:00","boot": "2023-10-15 16:23:22","powerLed": "0","load":" 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21","temp":"temp=52.5'C","freq":"frequency(48)=1800457088","volt":"volt=0.9035V","throttled":"throttled=0x0"}
+268 {"date":"2023-11-16T14:12:10+00:00","boot": "2023-10-15 16:23:22","powerLed": "0","load":" 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21","temp":"temp=52.5'C","freq":"frequency(48)=1800457088","volt":"volt=0.9035V","throttled":"throttled=0x0","volt":"volt=1.3250V","w1-Devices":"["28-01192f97de70","28-0300a2798236","28-3c01d60717b2","28-800000037541","w1_bus_master1"]"}
 ```
 Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
