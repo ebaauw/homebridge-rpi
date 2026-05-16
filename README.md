@@ -486,7 +486,7 @@ $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
 /sys/class/leds/PWR/brightness w
-/sys/bus/w1/devices/28-0316a279f8ff/w1_slave r
+/sys/bus/w1/devices/28-xxxxxxxxxxxx/w1_slave r
 +
 ```
 For DS18B20 sensors, add one `/sys/bus/w1/devices/<sensorId>/w1_slave r` line
