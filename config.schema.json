@@ -579,58 +579,24 @@
                     ]
                   },
                   {
-                    "anyOf": [
-                      {
-                        "properties": {
-                          "device": {
-                            "const": "ds18b20"
-                          }
+                    "if": {
+                      "properties": {
+                        "device": {
+                          "const": "ds18b20"
                         }
                       },
-                      {
-                        "properties": {
-                          "sensorId": {
-                            "not": {}
-                          }
+                      "required": ["device"]
+                    },
+                    "then": {
+                      "required": ["sensorId"]
+                    },
+                    "else": {
+                      "properties": {
+                        "sensorId": {
+                          "not": {}
                         }
                       }
-                    ]
-                  },
-                  {
-                    "anyOf": [
-                      {
-                        "properties": {
-                          "device": {
-                            "enum": [
-                              "blinkt",
-                              "button",
-                              "carbonmonoxide",
-                              "contact",
-                              "dht",
-                              "doorbell",
-                              "fan",
-                              "fanshim",
-                              "garage",
-                              "leak",
-                              "light",
-                              "lock",
-                              "motion",
-                              "p9813",
-                              "rocker",
-                              "servo",
-                              "smoke",
-                              "switch",
-                              "valve"
-                            ]
-                          }
-                        }
-                      },
-                      {
-                        "required": [
-                          "sensorId"
-                        ]
-                      }
-                    ]
+                    }
                   }
                 ]
               }
