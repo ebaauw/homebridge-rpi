@@ -226,6 +226,9 @@ add `ds18b20` device entries with the sensor's 1-wire ID:
 ```
 The `sensorId` can be discovered remotely through the `w1Devices` field produced by
 the `getState` script output (see below).
+Enable 1-wire first (for example through `sudo raspi-config` → _Interface Options_
+→ _1-Wire_), and wire data to GPIO4 (physical pin 7) with the required pull-up
+resistor per DS18B20 wiring guidance.
 
 #### Remote Raspberry Pi
 To expose one or more remote Raspberry Pi computers, specify multiple entries in
