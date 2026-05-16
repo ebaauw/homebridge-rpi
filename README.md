@@ -206,26 +206,20 @@ or [pinout.xyz](https://pinout.xyz).
 
 #### DS18B20 1-Wire Temperature Sensors
 To expose DS18B20 temperature sensors connected through the Raspberry Pi 1-wire bus,
-add `ds18b20` device entries with the sensor's 1-wire ID:
+enable **1-Wire Devices** on the host:
 ```json
 {
   "platform": "RPi",
   "hosts": [
     {
       "host": "pi4",
-      "devices": [
-        {
-          "device": "ds18b20",
-          "name": "Utility Room",
-          "sensorId": "28-0316a279f8ff"
-        }
-      ]
+      "w1": true
     }
   ]
 }
 ```
-The `sensorId` can be discovered remotely through the `w1Devices` field produced by
-the `getState` script output (see below).
+All discovered DS18B20 sensor IDs are exposed automatically, for both local and
+remote Raspberry Pi hosts.
 Enable 1-wire first (for example through `sudo raspi-config` → _Interface Options_
 → _1-Wire_), and wire data to GPIO4 (physical pin 7) with the required pull-up
 resistor per DS18B20 wiring guidance.
