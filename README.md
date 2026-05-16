@@ -353,6 +353,7 @@ state of the power LED through `/sys/class/leds/PWR/brightness`.
 This files needs to be whitelisted, in `/opt/pigpio/access`:
 ```
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
+/sys/bus/w1/devices/28-*/w1_slave r
 /sys/class/leds/PWR/brightness w
 +
 ```
@@ -429,8 +430,8 @@ cat - <<+
 "swap": "$(swapon --show=size,used --noheadings --bytes)",\
 "temp":"$(vcgencmd measure_temp)",\
 "throttled":"$(vcgencmd get_throttled)",\
-"w1Devices":[$(ls /sys/bus/w1/devices/ | sed 's/.*/"&"/' | paste -sd, -)],\
-"volt":"$(vcgencmd measure_volts)"\
+"volt":"$(vcgencmd measure_volts)",\
+"w1-Devices":"$(ls /sys/bus/w1/devices/ | sed 's/.*/"&"/' | paste -sd, -)"\
 }
 +
 +++
@@ -463,11 +464,11 @@ $ json /tmp/getState.json
   "swap": "2147479552    0",
   "temp": "temp=51.1'C",
   "throttled": "throttled=0x0",
-  "w1Devices": [
+  "volt": "volt=0.8800V",
+  "w1-Devices": [
     "28-0316a279f8ff",
     "w1_bus_master1"
-  ],
-  "volt": "volt=0.8800V"
+  ]
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
@@ -484,8 +485,8 @@ These files need to be whitelisted, in `/opt/pigpio/access`:
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
+/sys/bus/w1/devices/28-*/w1_slave r
 /sys/class/leds/PWR/brightness w
-/sys/bus/w1/devices/28-xxxxxxxxxxxx/w1_slave r
 +
 ```
 For DS18B20 sensors, add one `/sys/bus/w1/devices/<sensorId>/w1_slave r` line
