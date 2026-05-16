@@ -220,8 +220,9 @@
                   },
                   "sensorId": {
                     "title": "1-Wire Sensor ID",
-                    "description": "The DS18B20 1-wire sensor ID, e.g. `28-0316a279f8ff`.<br>For device: DS18B20 Temperature Sensor.",
-                    "type": "string"
+                    "description": "The DS18B20 1-wire sensor ID, format `28-` followed by 12 hex digits, e.g. `28-0316a279f8ff`.<br>For device: DS18B20 Temperature Sensor.",
+                    "type": "string",
+                    "pattern": "^28-[0-9a-fA-F]{12}$"
                   },
                   "pull": {
                     "title": "Pull-up/pull-down resistor",
