@@ -471,6 +471,8 @@ $ json /tmp/getState.json
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
+The plugin filters `w1Devices` and only uses DS18B20 IDs (`28-...`); entries like
+`w1_bus_master1` are expected and ignored.
 
 #### File Access
 `pigpio` provides a hook to access files remotely.
