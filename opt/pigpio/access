@@ -1,5 +1,6 @@
 /proc/cpuinfo r
 /tmp/getState.json r
 /sys/class/leds/PWR/brightness w
+/sys/bus/w1/devices/28-xxxxxxxxxxxx/w1_slave r
 /sys/bus/usb/drivers/usb/unbind w
 /sys/bus/usb/drivers/usb/bind w

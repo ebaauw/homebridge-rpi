@@ -104,6 +104,12 @@
                         ]
                       },
                       {
+                        "title": "DS18B20 Temperature Sensor",
+                        "enum": [
+                          "ds18b20"
+                        ]
+                      },
+                      {
                         "title": "Carbon Monoxide Sensor",
                         "enum": [
                           "carbonmonoxide"
@@ -212,6 +218,11 @@
                     "type": "integer",
                     "maximum": 31
                   },
+                  "sensorId": {
+                    "title": "1-Wire Sensor ID",
+                    "description": "The DS18B20 1-wire sensor ID, e.g. `28-0316a279f8ff`.<br>For device: DS18B20 Temperature Sensor.",
+                    "type": "string"
+                  },
                   "pull": {
                     "title": "Pull-up/pull-down resistor",
                     "description": "The configuration of the internal pull-up/pull-down resistor.<br>For input devices: Button, Carbon Monoxide Sensor, Contact Sensor, Door Bell, Leak Sensor, Motion Sensor, Rocket, Smoke Sensor.",
@@ -301,6 +312,7 @@
                           "device": {
                             "enum": [
                               "blinkt",
+                              "ds18b20",
                               "fanshim",
                               "p9813"
                             ]
@@ -562,6 +574,60 @@
                             "not": {}
                           }
                         }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "device": {
+                            "const": "ds18b20"
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "sensorId": {
+                            "not": {}
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "device": {
+                            "enum": [
+                              "blinkt",
+                              "button",
+                              "carbonmonoxide",
+                              "contact",
+                              "dht",
+                              "doorbell",
+                              "fan",
+                              "fanshim",
+                              "garage",
+                              "leak",
+                              "light",
+                              "lock",
+                              "motion",
+                              "p9813",
+                              "rocker",
+                              "servo",
+                              "smoke",
+                              "switch",
+                              "valve"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "required": [
+                          "sensorId"
+                        ]
                       }
                     ]
                   }

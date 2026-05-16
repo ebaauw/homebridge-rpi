@@ -35,6 +35,7 @@ It provides the following features:
   - Carbon Monoxide sensors;
   - Contact sensors (incl. Eve history);
   - DHTxx temperature/humidity sensors;
+  - DS18B20 1-wire temperature sensors;
   - Doorbells
   - Leak sensors;
   - Motion sensors (incl. Eve history);
@@ -202,6 +203,29 @@ Note the the GPIO pins are specified by Broadcom (or BCM) number,
 not by physical pin number, see the Raspberry Pi
 [documentation](https://www.raspberrypi.org/documentation/usage/gpio/)
 or [pinout.xyz](https://pinout.xyz).
+
+#### DS18B20 1-Wire Temperature Sensors
+To expose DS18B20 temperature sensors connected through the Raspberry Pi 1-wire bus,
+add `ds18b20` device entries with the sensor's 1-wire ID:
+```json
+{
+  "platform": "RPi",
+  "hosts": [
+    {
+      "host": "pi4",
+      "devices": [
+        {
+          "device": "ds18b20",
+          "name": "Utility Room",
+          "sensorId": "28-0316a279f8ff"
+        }
+      ]
+    }
+  ]
+}
+```
+The `sensorId` can be discovered remotely through the `w1Devices` field produced by
+the `getState` script output (see below).
 
 #### Remote Raspberry Pi
 To expose one or more remote Raspberry Pi computers, specify multiple entries in
@@ -408,6 +432,7 @@ cat - <<+
 "swap": "$(swapon --show=size,used --noheadings --bytes)",\
 "temp":"$(vcgencmd measure_temp)",\
 "throttled":"$(vcgencmd get_throttled)",\
+"w1Devices":[$(ls /sys/bus/w1/devices/ | sed 's/.*/"&"/' | paste -sd, -)],\
 "volt":"$(vcgencmd measure_volts)"\
 }
 +
@@ -441,6 +466,10 @@ $ json /tmp/getState.json
   "swap": "2147479552    0",
   "temp": "temp=51.1'C",
   "throttled": "throttled=0x0",
+  "w1Devices": [
+    "28-0316a279f8ff",
+    "w1_bus_master1"
+  ],
   "volt": "volt=0.8800V"
 }
 ```
@@ -457,8 +486,11 @@ $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
 /sys/class/leds/PWR/brightness w
+/sys/bus/w1/devices/28-0316a279f8ff/w1_slave r
 +
 ```
+For DS18B20 sensors, add one `/sys/bus/w1/devices/<sensorId>/w1_slave r` line
+for each configured sensor.
 To check that the files can be read, issue `fo` to open the file for reading:
 ```
 $ pigs fo /tmp/getState.json 1
