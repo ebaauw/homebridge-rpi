@@ -70,6 +70,11 @@
               "description": "Expose an Outlet service to control power to the USB ports. Only for Raspberry Pi models with four USB 2.0 ports: B+, 2B, 3B, and 3B+.<br>You need to configure pigpiod as well, see the <a href=\"https://github.com/ebaauw/homebridge-rpi/wiki/Supported-Devices#usb-power\" target=\"_blank\">Wiki</a>.",
               "type": "boolean"
             },
+            "w1": {
+              "title": "1-Wire Devices",
+              "description": "Expose all discovered DS18B20 sensors on the Raspberry Pi 1-wire bus.",
+              "type": "boolean"
+            },
             "devices": {
               "title": "Devices",
               "notitle": true,
@@ -101,6 +106,12 @@
                         "title": "DHTxx Temperature/Humidity Sensor",
                         "enum": [
                           "dht"
+                        ]
+                      },
+                      {
+                        "title": "DS18B20 Temperature Sensor",
+                        "enum": [
+                          "ds18b20"
                         ]
                       },
                       {
@@ -301,6 +312,7 @@
                           "device": {
                             "enum": [
                               "blinkt",
+                              "ds18b20",
                               "fanshim",
                               "p9813"
                             ]

@@ -19,6 +19,7 @@ cat - <<+
 "swap": "$(swapon --show=size,used --noheadings --bytes)",\
 "temp":"$(vcgencmd measure_temp)",\
 "throttled":"$(vcgencmd get_throttled)",\
-"volt":"$(vcgencmd measure_volts)"\
+"volt":"$(vcgencmd measure_volts)",\
+"w1-Devices":[$(ls /sys/bus/w1/devices/ | sed 's/.*/"&"/' | paste -sd, -)]\
 }
 +

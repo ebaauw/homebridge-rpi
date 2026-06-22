@@ -35,6 +35,7 @@ It provides the following features:
   - Carbon Monoxide sensors;
   - Contact sensors (incl. Eve history);
   - DHTxx temperature/humidity sensors;
+  - DS18B20 1-wire temperature sensors;
   - Doorbells
   - Leak sensors;
   - Motion sensors (incl. Eve history);
@@ -203,6 +204,26 @@ not by physical pin number, see the Raspberry Pi
 [documentation](https://www.raspberrypi.org/documentation/usage/gpio/)
 or [pinout.xyz](https://pinout.xyz).
 
+#### DS18B20 1-Wire Temperature Sensors
+To expose DS18B20 temperature sensors connected through the Raspberry Pi 1-wire bus,
+enable **1-Wire Devices** on the host:
+```json
+{
+  "platform": "RPi",
+  "hosts": [
+    {
+      "host": "pi4",
+      "w1": true
+    }
+  ]
+}
+```
+All discovered DS18B20 sensor IDs are exposed automatically, for both local and
+remote Raspberry Pi hosts.
+Enable 1-wire first (for example through `sudo raspi-config` → _Interface Options_
+→ _1-Wire_), and wire data to GPIO4 (physical pin 7) with the required pull-up
+resistor per DS18B20 wiring guidance.
+
 #### Remote Raspberry Pi
 To expose one or more remote Raspberry Pi computers, specify multiple entries in
 the `hosts` array:
@@ -332,6 +353,7 @@ state of the power LED through `/sys/class/leds/PWR/brightness`.
 This files needs to be whitelisted, in `/opt/pigpio/access`:
 ```
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
+/sys/bus/w1/devices/28-*/w1_slave r
 /sys/class/leds/PWR/brightness w
 +
 ```
@@ -408,7 +430,8 @@ cat - <<+
 "swap": "$(swapon --show=size,used --noheadings --bytes)",\
 "temp":"$(vcgencmd measure_temp)",\
 "throttled":"$(vcgencmd get_throttled)",\
-"volt":"$(vcgencmd measure_volts)"\
+"volt":"$(vcgencmd measure_volts)",\
+"w1-Devices":"$(ls /sys/bus/w1/devices/ | sed 's/.*/"&"/' | paste -sd, -)"\
 }
 +
 +++
@@ -441,10 +464,16 @@ $ json /tmp/getState.json
   "swap": "2147479552    0",
   "temp": "temp=51.1'C",
   "throttled": "throttled=0x0",
-  "volt": "volt=0.8800V"
+  "volt": "volt=0.8800V",
+  "w1-Devices": [
+    "28-0316a279f8ff",
+    "w1_bus_master1"
+  ]
 }
 ```
 Note that `date` is in UTC, but `boot` is in local time.
+The plugin filters `w1Devices` and only uses DS18B20 IDs (`28-...`); entries like
+`w1_bus_master1` are expected and ignored.
 
 #### File Access
 `pigpio` provides a hook to access files remotely.
@@ -456,8 +485,11 @@ These files need to be whitelisted, in `/opt/pigpio/access`:
 $ sudo sh -c 'cat - > /opt/pigpio/access' <<+
 /proc/cpuinfo r
 /tmp/getState.json r
+/sys/bus/w1/devices/28-*/w1_slave r
 /sys/class/leds/PWR/brightness w
 +
+```
+For DS18B20 sensors, dynamically discover sensors from `/sys/bus/w1/devices/<sensorId>/w1_slave`.
 ```
 To check that the files can be read, issue `fo` to open the file for reading:
 ```
@@ -469,7 +501,7 @@ Note the returned file descriptor, in this case `0`.
 Next issue `fr` to read up to 1024 bytes from the file descriptor, `0`, and print them as ascii:
 ```
 $ pigs -a fr 0 1024
-268 {"date":"2023-11-16T14:12:10+00:00","boot": "2023-10-15 16:23:22","powerLed": "0","load":" 15:12:10 up 31 days, 23:48,  3 users,  load average: 0.25, 0.26, 0.21","temp":"temp=52.5'C","freq":"frequency(48)=1800457088","volt":"volt=0.9035V","throttled":"throttled=0x0"}
+268 {"date":"2023-11-16T14:12:10+00:00","boot": "2023-10-15 16:23:22","fan": 75,"freq": 2400023808,"load": 0.02,"powerLed": null,"swap": 0,"temp":"temp=52.5'C","throttled":"throttled=0x00000000","volt":"volt=1.3250V","w1-Devices":"["28-01192f97de70","28-0300a2798236","28-3c01d60717b2","28-800000037541","w1_bus_master1"]"}
 ```
 Lastly, make sure to close the file and free the file descriptor, `0`.
 ```
